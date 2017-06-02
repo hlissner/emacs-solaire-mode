@@ -7,9 +7,9 @@ If only certain buffers could be so grossly incandescent.
 
 [![Praise the sun](praise.jpg)](http://winkla12.deviantart.com/art/Grossly-Incandescent-438305072)
 
-By default, `solaire-mode` changes the background of file-visiting buffers (and
-certain aspects of the UI), making them easier to distinguish from transient,
-temporary or special buffers.
+`solaire-mode` changes the background of file-visiting buffers (and certain
+aspects of the UI) to make them easier to distinguish from transient, temporary
+or special buffers.
 
 **Note:**
 + Uses `face-remapping-alist`, which other plugins may overwrite.
