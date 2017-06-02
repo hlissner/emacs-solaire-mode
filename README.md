@@ -24,10 +24,10 @@ or special buffers.
 (require 'solaire-mode)
 
 ;; brighten buffers that represent real files:
-(add-hook 'find-file-hook #'solaire-mode-maybe)
+(add-hook 'find-file-hook #'turn-on-solaire-mode)
 
 ;; ...if you use auto-revert-mode:
-(add-hook 'after-revert-hook #'solaire-mode-maybe)
+(add-hook 'after-revert-hook #'turn-on-solaire-mode)
 
 ;; to unconditionally brighten certain buffers:
 (add-hook 'ediff-prepare-buffer-hook #'solaire-mode)

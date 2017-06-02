@@ -26,10 +26,10 @@
 ;;   (require 'solaire-mode)
 ;;
 ;;   ;; brighten buffers that represent real files:
-;;   (add-hook 'find-file-hook #'solaire-mode-maybe)
+;;   (add-hook 'find-file-hook #'turn-on-solaire-mode)
 ;;
 ;;   ;; ...if you use auto-revert-mode:
-;;   (add-hook 'after-revert-hook #'solaire-mode-maybe)
+;;   (add-hook 'after-revert-hook #'turn-on-solaire-mode)
 ;;
 ;;   ;; to unconditionally brighten certain buffers:
 ;;   (add-hook 'ediff-prepare-buffer-hook #'solaire-mode)
@@ -129,13 +129,20 @@ simply turn this off for those plugins."
       (set-face-background 'fringe (face-background 'default)))))
 
 ;;;###autoload
-(defun solaire-mode-maybe ()
+(defun turn-on-solaire-mode ()
   "Enable `solaire-mode' in the current buffer.
 
-Does nothing if it doesn't represent a real, file-visiting buffer."
+Does nothing if it doesn't represent a real, file-visiting buffer (see
+`solaire-mode-real-buffer-fn')."
   (when (and (not solaire-mode)
              (funcall solaire-mode-real-buffer-fn (current-buffer)))
     (solaire-mode +1)))
+
+;;;###autoload
+(defun turn-off-solaire-mode ()
+  "Disable `solaire-mode' in the current buffer."
+  (when solaire-mode
+    (solaire-mode -1)))
 
 ;;;###autoload
 (defun solaire-mode-on-minibuffer ()
@@ -162,7 +169,7 @@ Does nothing if it doesn't represent a real, file-visiting buffer."
       "Restore `solaire-mode' in buffers when `persp-mode' loads a session."
       (dolist (buf (persp-buffer-list))
         (with-current-buffer buf
-          (solaire-mode-maybe))))
+          (turn-on-solaire-mode))))
     (advice-add #'persp-load-state-from-file :after #'solaire-mode--reload-buffers)))
 
 (provide 'solaire-mode)
