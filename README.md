@@ -23,14 +23,22 @@ or special buffers.
 ```emacs-lisp
 (require 'solaire-mode)
 
-;; brighten buffers that represent real files:
+;; brighten buffers that represent real files, and ensure solaire-mode persists
+;; across major-mode changes.
 (add-hook 'find-file-hook #'turn-on-solaire-mode)
+(add-hook 'after-change-major-mode-hook #'turn-on-solaire-mode)
 
 ;; ...if you use auto-revert-mode:
 (add-hook 'after-revert-hook #'turn-on-solaire-mode)
+```
 
-;; to unconditionally brighten certain buffers:
+You can enable solaire-mode unconditionally in certain modes via hooks, like so:
+
+```emacs-lisp
 (add-hook 'ediff-prepare-buffer-hook #'solaire-mode)
+(add-hook 'gist-mode-hook #'solaire-mode)
+(add-hook 'twittering-mode-hook #'solaire-mode)
+(add-hook 'mu4e-view-mode-hook #'solaire-mode)
 ```
 
 ## Configuration
