@@ -118,12 +118,12 @@ simply turn this off for those plugins."
   (if solaire-mode
       (progn
         (set-face-background 'fringe (face-background 'solaire-default-face))
-        (setq face-remapping-alist (append solaire-mode-remapped-faces face-remapping-alist))
+        (setq face-remapping-alist (append solaire-mode-remap-faces face-remapping-alist))
         (unless solaire-mode-remap-modeline
           (dolist (fc '(mode-line mode-line-inactive) solaire-mode-remap-faces)
             (setq face-remapping-alist
                   (assq-delete-all fc solaire-mode-remap-faces)))))
-    (dolist (remap solaire-mode-remapped-faces)
+    (dolist (remap solaire-mode-remap-faces)
       (setq face-remapping-alist (delete remap face-remapping-alist)))
     (unless (cl-some (lambda (buf) (buffer-local-value 'solaire-mode buf))
                      (buffer-list))
