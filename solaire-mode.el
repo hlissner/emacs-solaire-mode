@@ -154,5 +154,16 @@ Does nothing if it doesn't represent a real, file-visiting buffer."
         (solaire-mode -1)
         (solaire-mode +1)))))
 
+;; Fixes an issue with persp-mode where solaire-mode is forgotten when loading a
+;; perspective from file.
+(eval-after-load "persp-mode"
+  (lambda ()
+    (defun solaire-mode--reload-buffers (&rest _)
+      "Restore `solaire-mode' in buffers when `persp-mode' loads a session."
+      (dolist (buf (persp-buffer-list))
+        (with-current-buffer buf
+          (solaire-mode-maybe))))
+    (advice-add #'persp-load-state-from-file :after #'solaire-mode--reload-buffers)))
+
 (provide 'solaire-mode)
 ;;; solaire-mode.el ends here
