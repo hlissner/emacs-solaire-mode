@@ -1,4 +1,4 @@
-;;; solaire-mode.el --- make source buffers grossly incandescent
+;;; solaire-mode.el --- make certain buffers grossly incandescent
 ;;
 ;; Copyright (C) 2017 Henrik Lissner
 ;;
@@ -15,7 +15,24 @@
 ;;
 ;;; Commentary:
 ;;
-;; TODO
+;; `solaire-mode` changes the background of file-visiting buffers (and certain
+;; aspects of the UI) to make them easier to distinguish from transient,
+;; temporary or special buffers.
+;;
+;;; Installation
+;;
+;; M-x package-install RET solaire-mode
+;;
+;;   (require 'solaire-mode)
+;;
+;;   ;; brighten buffers that represent real files:
+;;   (add-hook 'find-file-hook #'solaire-mode-maybe)
+;;
+;;   ;; ...if you use auto-revert-mode:
+;;   (add-hook 'after-revert-hook #'solaire-mode-maybe)
+;;
+;;   ;; to unconditionally brighten certain buffers:
+;;   (add-hook 'ediff-prepare-buffer-hook #'solaire-mode)
 ;;
 ;;; Code:
 
@@ -26,46 +43,50 @@
   :group 'faces)
 
 (defface solaire-default-face '((t (:inherit default)))
-  "TODO"
+  "Alternative version of the `default' face."
   :group 'solaire-mode)
 
 (defface solaire-minibuffer-face '((t (:inherit solaire-default-face)))
-  "TODO"
+  "Alternative face for the minibuffer. See `solaire-mode-on-minibuffer'."
   :group 'solaire-mode)
 
 (defface solaire-linum-face '((t (:inherit linum)))
-  "TODO"
+  "Alternative face for `linum-mode' (and `nlinum-mode')."
   :group 'solaire-mode)
 
 (defface solaire-linum-highlight-face '((t (:inherit linum)))
-  "TODO"
+  "Alternative face for highlighted line numbers."
   :group 'solaire-mode)
 
 (defface solaire-hl-line-face '((t (:inherit hl-line)))
-  "TODO"
+  "Alternative face for the current line, highlighted by `hl-line'."
   :group 'solaire-mode)
 
 (defface solaire-org-hide-face '((t (:inherit org-hide)))
-  "TODO"
+  "Alternative face for `org-hide', which is used to camoflauge the leading
+asterixes in `org-mode' when `org-hide-leading-stars' is non-nil."
   :group 'solaire-mode)
 
 (defface solaire-mode-line-face '((t (:inherit mode-line)))
-  "TODO"
+  "Alternative face for the mode line."
   :group 'solaire-mode)
 
 (defface solaire-mode-line-inactive-face '((t (:inherit mode-line-inactive)))
-  "TODO"
+  "Alternative face for the inactive mode line."
   :group 'solaire-mode)
 
 (defcustom solaire-mode-real-buffer-fn #'solaire-mode--real-buffer-fn
-  "The function used to determine whether the current buffer should be
-brightened or not."
+  "The function used to determine whether the current buffer should be affected
+or not. Should accept one argument: the buffer.
+
+See `solaire-mode--real-buffer-fn' (the default function)."
   :group 'solaire-mode
   :type 'function)
 
 (defcustom solaire-mode-remap-modeline t
-  "If non-nil, remap mode-line faces as well. This may conflict with certain
-mode-line plugins, like powerline and telephone-line."
+  "If non-nil, remap mode-line faces as well. Solaire-mode can conflict with
+certain mode-line plugins, like powerline and telephone-line, so it's best to
+simply turn this off for those plugins."
   :group 'solaire-mode
   :type 'boolean)
 
@@ -118,7 +139,7 @@ Does nothing if it doesn't represent a real, file-visiting buffer."
 
 ;;;###autoload
 (defun solaire-mode-on-minibuffer ()
-  "Highlight the minibuffer whenever it is in use."
+  "Highlight the minibuffer whenever it is active."
   (with-selected-window (minibuffer-window)
     (setq-local face-remapping-alist
                 (append face-remapping-alist '((default doom-minibuffer-active))))))
