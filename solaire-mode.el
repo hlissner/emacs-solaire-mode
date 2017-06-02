@@ -117,7 +117,7 @@ simply turn this off for those plugins."
   (put 'face-remapping-alist 'permanent-local solaire-mode)
   (if solaire-mode
       (progn
-        (set-face-background 'fringe (face-background 'bright-default-face))
+        (set-face-background 'fringe (face-background 'solaire-default-face))
         (setq face-remapping-alist (append solaire-mode-remapped-faces face-remapping-alist))
         (unless solaire-mode-remap-modeline
           (dolist (fc '(mode-line mode-line-inactive) solaire-mode-remap-faces)
