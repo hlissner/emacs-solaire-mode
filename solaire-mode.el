@@ -146,7 +146,13 @@ Does nothing if it doesn't represent a real, file-visiting buffer."
 
 ;;;###autoload
 (defun solaire-mode-reset ()
-  "Resets all buffers with `solaire-mode' enabled.")
+  "Resets all buffers with `solaire-mode' enabled."
+  (interactive)
+  (dolist (buf (buffer-list))
+    (with-current-buffer buf
+      (when solaire-mode
+        (solaire-mode -1)
+        (solaire-mode +1)))))
 
 (provide 'solaire-mode)
 ;;; solaire-mode.el ends here
