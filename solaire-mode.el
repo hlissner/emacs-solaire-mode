@@ -75,6 +75,7 @@ asterixes in `org-mode' when `org-hide-leading-stars' is non-nil."
   "Alternative face for the inactive mode line."
   :group 'solaire-mode)
 
+;;
 (defcustom solaire-mode-real-buffer-fn #'solaire-mode--real-buffer-fn
   "The function used to determine whether the current buffer should be affected
 or not. Should accept one argument: the buffer.
@@ -94,9 +95,9 @@ simply turn this off for those plugins."
   '((default solaire-default-face)
     (hl-line solaire-hl-line-face)
     (linum solaire-linum-face)
+    (org-hide solaire-org-hide-face)
     (mode-line solaire-mode-line-face)
-    (mode-line-inactive solaire-mode-line-inactive-face)
-    (org-hide solaire-org-hide-face))
+    (mode-line-inactive solaire-mode-line-inactive-face))
   "An alist of faces to remap when enabling `solaire-mode'."
   :group 'solaire-mode
   :type '(list face))
