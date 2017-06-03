@@ -173,5 +173,16 @@ Does nothing if it doesn't represent a real, file-visiting buffer (see
           (turn-on-solaire-mode))))
     (advice-add #'persp-load-state-from-file :after #'solaire-mode--reload-buffers)))
 
+;; ensure that solaire-mode doesn't interfere with text-scaling (or vice versa)
+(defun solaire-mode--face-remap-add-relative (orig-fn &rest args)
+  "Ensure that other themes, functions or packages that use
+`face-remap-add-relative' (like `text-scale-set') don't undo doom's overriden
+faces."
+  (when solaire-mode
+    (let ((remap (assq (nth 0 args) face-remapping-alist)))
+      (when remap (setf (nth 0 args) (cadr remap)))))
+  (apply orig-fn args))
+(advice-add 'face-remap-add-relative :around #'solaire-mode--face-remap-add-relative)
+
 (provide 'solaire-mode)
 ;;; solaire-mode.el ends here
