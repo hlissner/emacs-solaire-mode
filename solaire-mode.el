@@ -150,7 +150,7 @@ Does nothing if it doesn't represent a real, file-visiting buffer (see
   "Highlight the minibuffer whenever it is active."
   (with-selected-window (minibuffer-window)
     (setq-local face-remapping-alist
-                (append face-remapping-alist '((default doom-minibuffer-active))))))
+                (append face-remapping-alist '((default solaire-minibuffer-face))))))
 
 ;;;###autoload
 (defun solaire-mode-reset ()
