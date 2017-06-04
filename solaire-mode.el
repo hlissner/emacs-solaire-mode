@@ -7,7 +7,7 @@
 ;; Created: Jun 03, 2017
 ;; Modified: Jun 04, 2017
 ;; Version: 1.0.0
-;; Keywords: dim bright window buffer
+;; Keywords: dim bright window buffer faces
 ;; Homepage: https://github.com/hlissner/emacs-solaire-mode
 ;; Package-Requires: ((emacs "24.4") (cl-lib "0.5"))
 ;;
@@ -89,17 +89,17 @@ asterixes in `org-mode' when `org-hide-leading-stars' is non-nil."
 
 ;;
 (defcustom solaire-mode-real-buffer-fn #'solaire-mode--real-buffer-fn
-  "The function used to determine whether the current buffer should be affected
-or not. Should accept one argument: the buffer.
+  "The function that determines buffer eligability for `solaire-mode'.
 
-See `solaire-mode--real-buffer-fn' (the default function)."
+Should accept one argument: the buffer."
   :group 'solaire-mode
   :type 'function)
 
 (defcustom solaire-mode-remap-modeline t
-  "If non-nil, remap mode-line faces as well. Solaire-mode can conflict with
-certain mode-line plugins, like powerline and telephone-line, so it's best to
-simply turn this off for those plugins."
+  "If non-nil, remap mode-line faces as well.
+
+Solaire-mode can conflict with certain mode-line plugins, like powerline and
+telephone-line, so it's best to simply turn this off for those plugins."
   :group 'solaire-mode
   :type 'boolean)
 
@@ -115,7 +115,7 @@ simply turn this off for those plugins."
   :type '(list face))
 
 (defun solaire-mode--real-buffer-fn (buf)
-  "Returns t if the current buffer represents a real file."
+  "Return t if the current buffer BUF represents a real file."
   buffer-file-name)
 
 ;;;###autoload
@@ -166,7 +166,7 @@ Does nothing if it doesn't represent a real, file-visiting buffer (see
 
 ;;;###autoload
 (defun solaire-mode-reset ()
-  "Resets all buffers with `solaire-mode' enabled."
+  "Reset all buffers with `solaire-mode' enabled."
   (interactive)
   (dolist (buf (buffer-list))
     (with-current-buffer buf
@@ -186,9 +186,8 @@ Does nothing if it doesn't represent a real, file-visiting buffer (see
     (advice-add #'persp-load-state-from-file :after #'solaire-mode--reload-buffers)))
 
 (defun solaire-mode--face-remap-add-relative (orig-fn &rest args)
-  "Ensure that other themes, functions or packages that use
-`face-remap-add-relative' (like `text-scale-set') don't undo solaire's overriden
-faces."
+  "Minimize interference from other themes, functions and/or packages trying to
+remap their own faces (like `text-scale-set')."
   (when solaire-mode
     (let ((remap (assq (nth 0 args) face-remapping-alist)))
       (when remap (setf (nth 0 args) (cadr remap)))))
