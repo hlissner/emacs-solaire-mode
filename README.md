@@ -39,34 +39,41 @@ Praise the sun.
 
 ;; You can do similar with the minibuffer when it is activated:
 (add-hook 'minibuffer-setup-hook #'solaire-mode-in-minibuffer)
-```
 
-You can enable solaire-mode unconditionally in certain modes via hooks, like so:
-
-```emacs-lisp
+;; To enable solaire-mode unconditionally for certain modes:
 (add-hook 'ediff-prepare-buffer-hook #'solaire-mode)
-(add-hook 'gist-mode-hook #'solaire-mode)
-(add-hook 'twittering-mode-hook #'solaire-mode)
-(add-hook 'mu4e-view-mode-hook #'solaire-mode)
 ```
 
 ## Configuration
++ By default, `solaire-mode`'s effects will be invisible. Its faces must be
+  defined:
 
-What faces get remapped is controlled by `solaire-mode-remap-faces` and
-`solaire-mode-remap-modeline`.
+  + `solaire-default-face`
+  + `solaire-minibuffer-face`
+  + `solaire-linum-face`
+  + `solaire-linum-highlight-face`
+  + `solaire-hl-line-face`
+  + `solaire-org-hide-face`
+  + `solaire-mode-line-face`
+  + `solaire-mode-line-inactive-face`
 
-By default, these faces are affected:
+  The only theme(s) that supports this, that I know of, is [doom-themes].
 
-+ `default`
-+ `hl-line`
-+ `linum`
-+ `org-hide`
-+ `mode-line`
-+ `mode-line-inactive`
++ What faces get remapped is controlled by `solaire-mode-remap-faces` and
+  `solaire-mode-remap-modeline`.
 
-You can change what `solaire-mode` considers a "real" file by changing
-`solaire-mode-real-buffer-fn` (a function that determines if a buffer should be
-brightened or not).
+  By default, these faces are affected:
+
+  + `default`
+  + `hl-line`
+  + `linum`
+  + `org-hide`
+  + `mode-line`
+  + `mode-line-inactive`
+
+  You can change what `solaire-mode` considers a "real" file by changing
+  `solaire-mode-real-buffer-fn` (a function that determines if a buffer should
+  be brightened or not).
 
 ## Known conflicts
 + By default, `solaire-mode` remaps the mode-line faces. This interferes with
