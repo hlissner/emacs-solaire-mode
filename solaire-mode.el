@@ -5,7 +5,7 @@
 ;; Author: Henrik Lissner <http://github/hlissner>
 ;; Maintainer: Henrik Lissner <henrik@lissner.net>
 ;; Created: Jun 03, 2017
-;; Modified: Jun 03, 2017
+;; Modified: Jun 04, 2017
 ;; Version: 1.0.0
 ;; Keywords: dim bright window buffer
 ;; Homepage: https://github.com/hlissner/emacs-solaire-mode
@@ -15,9 +15,12 @@
 ;;
 ;;; Commentary:
 ;;
-;; `solaire-mode` changes the background of file-visiting buffers (and certain
-;; aspects of the UI) to make them easier to distinguish from transient,
-;; temporary or special buffers.
+;; `soliare-mode' is inspired by editors who visually distinguish code-editing
+;; windows from sidebars, popups, terminals, ecetera. It changes the background
+;; of file-visiting buffers (and certain aspects of the UI) to make them easier
+;; to distinguish from other, not-so-important buffers.
+;;
+;; Praise the sun.
 ;;
 ;;; Installation
 ;;
@@ -25,14 +28,23 @@
 ;;
 ;;   (require 'solaire-mode)
 ;;
-;;   ;; brighten buffers that represent real files:
-;;   (add-hook 'find-file-hook #'turn-on-solaire-mode)
+;; Brighten buffers that represent real files, and ensure solaire-mode persists
+;; across major-mode changes.
 ;;
-;;   ;; ...if you use auto-revert-mode:
+;;   (add-hook 'find-file-hook #'turn-on-solaire-mode)
+;;   (add-hook 'after-change-major-mode-hook #'turn-on-solaire-mode)
+;;
+;; If you use auto-revert-mode:
+;;
 ;;   (add-hook 'after-revert-hook #'turn-on-solaire-mode)
 ;;
-;;   ;; to unconditionally brighten certain buffers:
+;; And to unconditionally brighten certain buffers:
+;;
 ;;   (add-hook 'ediff-prepare-buffer-hook #'solaire-mode)
+;;
+;; You can do similar with the minibuffer when it is active:
+;;
+;;   (add-hook 'minibuffer-setup-hook #'solaire-mode-in-minibuffer)
 ;;
 ;;; Code:
 
@@ -47,7 +59,7 @@
   :group 'solaire-mode)
 
 (defface solaire-minibuffer-face '((t (:inherit solaire-default-face)))
-  "Alternative face for the minibuffer. See `solaire-mode-on-minibuffer'."
+  "Alternative face for the minibuffer. See `solaire-mode-in-minibuffer'."
   :group 'solaire-mode)
 
 (defface solaire-linum-face '((t (:inherit linum)))
@@ -146,7 +158,7 @@ Does nothing if it doesn't represent a real, file-visiting buffer (see
     (solaire-mode -1)))
 
 ;;;###autoload
-(defun solaire-mode-on-minibuffer ()
+(defun solaire-mode-in-minibuffer ()
   "Highlight the minibuffer whenever it is active."
   (with-selected-window (minibuffer-window)
     (setq-local face-remapping-alist

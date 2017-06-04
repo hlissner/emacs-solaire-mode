@@ -5,16 +5,22 @@
 
 If only certain buffers could be so grossly incandescent.
 
-[![Praise the sun](praise.jpg)](http://winkla12.deviantart.com/art/Grossly-Incandescent-438305072)
+<a href="http://winkla12.deviantart.com/art/Grossly-Incandescent-438305072">
+  <img src="praise.jpg" width="100%" />
+</a>
 
-`solaire-mode` changes the background of file-visiting buffers (and certain
-aspects of the UI) to make them easier to distinguish from transient, temporary
-or special buffers.
+`soliare-mode` is inspired by editors who visually distinguish code-editing
+windows from sidebars, popups, terminals, ecetera. It changes the background of
+file-visiting buffers (and certain aspects of the UI) to make them easier to
+distinguish from other, not-so-important buffers.
+
+Praise the sun.
 
 **Note:**
 + Uses `face-remapping-alist`, which other plugins may overwrite.
 + Tested mainly on Emacs 25.1+
 + This was once a part of [doom-themes] as `doom-buffer-mode`
++ Try jumping.
 
 ## Install
 
@@ -30,6 +36,9 @@ or special buffers.
 
 ;; ...if you use auto-revert-mode:
 (add-hook 'after-revert-hook #'turn-on-solaire-mode)
+
+;; You can do similar with the minibuffer when it is activated:
+(add-hook 'minibuffer-setup-hook #'solaire-mode-in-minibuffer)
 ```
 
 You can enable solaire-mode unconditionally in certain modes via hooks, like so:
@@ -67,6 +76,7 @@ brightened or not).
   ```emacs-lisp
   (setq solaire-mode-remap-modeline nil)
   ```
++ Don't trust Patches!
 
 
-[doom-themes]: https://github.com/hlissner/emacs-doom-theme
+[doom-themes]: https://github.com/hlissner/emacs-doom-themes
