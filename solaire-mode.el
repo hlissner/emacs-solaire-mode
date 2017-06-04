@@ -64,10 +64,6 @@
   "Alternative face for `linum-mode' (and `nlinum-mode')."
   :group 'solaire-mode)
 
-(defface solaire-linum-highlight-face '((t (:inherit linum)))
-  "Alternative face for highlighted line numbers."
-  :group 'solaire-mode)
-
 (defface solaire-hl-line-face '((t (:inherit hl-line)))
   "Alternative face for the current line, highlighted by `hl-line'."
   :group 'solaire-mode)
