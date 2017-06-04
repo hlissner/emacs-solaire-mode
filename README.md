@@ -9,10 +9,9 @@ If only certain buffers could be so grossly incandescent.
   <img src="praise.jpg" width="100%" />
 </a>
 
-`soliare-mode` is inspired by editors who visually distinguish code-editing
-windows from sidebars, popups, terminals, ecetera. It changes the background of
-file-visiting buffers (and certain aspects of the UI) to make them easier to
-distinguish from other, not-so-important buffers.
+`solaire-mode` is an aesthetic plugin that helps visually distinguish
+file-visiting windows from other types of windows (like popups or sidebars) by
+giving them a slightly different -- often brighter -- background.
 
 Praise the sun.
 
