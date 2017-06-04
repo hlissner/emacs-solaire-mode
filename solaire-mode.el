@@ -28,10 +28,8 @@
 ;;
 ;;   (require 'solaire-mode)
 ;;
-;; Brighten buffers that represent real files, and ensure solaire-mode persists
-;; across major-mode changes.
+;; Brighten buffers that represent real files:
 ;;
-;;   (add-hook 'find-file-hook #'turn-on-solaire-mode)
 ;;   (add-hook 'after-change-major-mode-hook #'turn-on-solaire-mode)
 ;;
 ;; If you use auto-revert-mode:

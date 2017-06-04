@@ -28,9 +28,7 @@ Praise the sun.
 ```emacs-lisp
 (require 'solaire-mode)
 
-;; brighten buffers that represent real files, and ensure solaire-mode persists
-;; across major-mode changes.
-(add-hook 'find-file-hook #'turn-on-solaire-mode)
+;; brighten buffers (that represent real files)
 (add-hook 'after-change-major-mode-hook #'turn-on-solaire-mode)
 
 ;; ...if you use auto-revert-mode:
@@ -70,9 +68,8 @@ Praise the sun.
   + `mode-line`
   + `mode-line-inactive`
 
-  You can change what `solaire-mode` considers a "real" file by changing
-  `solaire-mode-real-buffer-fn` (a function that determines if a buffer should
-  be brightened or not).
++ The function in `solaire-mode-real-buffer-fn` determines if a buffer should be
+  brightened or not.
 
 ## Known conflicts
 + By default, `solaire-mode` remaps the mode-line faces. This interferes with
