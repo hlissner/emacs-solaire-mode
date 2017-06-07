@@ -6,7 +6,7 @@
 If only certain buffers could be so grossly incandescent.
 
 <a href="http://winkla12.deviantart.com/art/Grossly-Incandescent-438305072">
-  <img src="praise.jpg" width="100%" />
+  <img src="/../screenshots/praise.jpg" width="100%" />
 </a>
 
 `solaire-mode` is an aesthetic plugin that helps visually distinguish
@@ -20,6 +20,10 @@ Praise the sun.
 + Tested mainly on Emacs 25.1+
 + This was once a part of [doom-themes] as `doom-buffer-mode`
 + Try jumping.
+
+## Screenshot
+
+![solaire-mode at work](/../screenshots/screenshot.png)
 
 ## Install
 
