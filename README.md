@@ -75,13 +75,20 @@ Praise the sun.
 + The function in `solaire-mode-real-buffer-fn` determines if a buffer should be
   brightened or not.
 
-## Known conflicts
+## Jolly cooperation with other plugins
 + By default, `solaire-mode` remaps the mode-line faces. This interferes with
   certain mode-line packages like telephone-line or powerline. You can undo this
   with:
 
   ```emacs-lisp
   (setq solaire-mode-remap-modeline nil)
+  ```
++ When `persp-mode` loads a perspective from file, it doesn't restore
+  solaire-mode. The function `solaire-mode-restore-persp-mode-buffers` is
+  available for this:
+
+  ```emacs-lisp
+  (advice-add #'persp-load-state-from-file :after #'solaire-mode-restore-persp-mode-buffers)
   ```
 + Don't trust Patches!
 
