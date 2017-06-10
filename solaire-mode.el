@@ -131,8 +131,9 @@ telephone-line, so it's best to simply turn this off for those plugins."
                   (assq-delete-all fc solaire-mode-remap-faces)))))
     (dolist (remap solaire-mode-remap-faces)
       (setq face-remapping-alist (delete remap face-remapping-alist)))
-    (unless (cl-some (lambda (buf) (buffer-local-value 'solaire-mode buf))
-                     (buffer-list))
+    (unless (cl-loop for buf in (buffer-list)
+                     when (buffer-local-value 'solaire-mode buf)
+                     return t)
       (set-face-background 'fringe (face-background 'default)))))
 
 ;;;###autoload
