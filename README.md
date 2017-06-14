@@ -1,5 +1,6 @@
 [![MIT](https://img.shields.io/badge/license-MIT-green.svg)](./LICENSE)
 [![MELPA](http://melpa.org/packages/solaire-mode-badge.svg)](http://melpa.org/#/solaire-mode)
+![solaire-mode](https://img.shields.io/badge/solaire--mode-v1.0.1-blue.svg)
 
 # Solaire mode
 
