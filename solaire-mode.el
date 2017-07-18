@@ -64,6 +64,15 @@
   "Alternative face for `linum-mode' (and `nlinum-mode')."
   :group 'solaire-mode)
 
+(defface solaire-line-number-face '((t (:inherit line-number)))
+  "Alternative face for `line-number', for native line numbers in Emacs 26+."
+  :group 'solaire-mode)
+
+(defface solaire-line-number-current-line-face '((t (:inherit line-number-current-line)))
+  "Alternative face for `line-number-current-line', for native line numbers in
+Emacs 26+."
+  :group 'solaire-mode)
+
 (defface solaire-hl-line-face '((t (:inherit hl-line)))
   "Alternative face for the current line, highlighted by `hl-line'."
   :group 'solaire-mode)
@@ -101,6 +110,8 @@ telephone-line, so it's best to simply turn this off for those plugins."
   '((default solaire-default-face)
     (hl-line solaire-hl-line-face)
     (linum solaire-linum-face)
+    (line-number solaire-line-number-face)
+    (line-number-current-line solaire-line-number-current-line-face)
     (org-hide solaire-org-hide-face)
     (mode-line solaire-mode-line-face)
     (mode-line-inactive solaire-mode-line-inactive-face))
