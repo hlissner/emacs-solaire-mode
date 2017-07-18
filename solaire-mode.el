@@ -5,8 +5,8 @@
 ;; Author: Henrik Lissner <http://github/hlissner>
 ;; Maintainer: Henrik Lissner <henrik@lissner.net>
 ;; Created: Jun 03, 2017
-;; Modified: Jun 04, 2017
-;; Version: 1.0.0
+;; Modified: Jul 18, 2017
+;; Version: 1.0.2
 ;; Keywords: dim bright window buffer faces
 ;; Homepage: https://github.com/hlissner/emacs-solaire-mode
 ;; Package-Requires: ((emacs "24.4") (cl-lib "0.5"))
@@ -50,7 +50,7 @@
 
 (defgroup solaire-mode nil
   "Options for solaire-mode."
-  :group 'faces) ; FIXME :group
+  :group 'faces)
 
 (defface solaire-default-face '((t (:inherit default)))
   "Alternative version of the `default' face."
