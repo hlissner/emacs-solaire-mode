@@ -145,6 +145,7 @@ telephone-line, so it's best to simply turn this off for those plugins."
 
 Does nothing if it doesn't represent a real, file-visiting buffer (see
 `solaire-mode-real-buffer-fn')."
+  (interactive)
   (when (and (not solaire-mode)
              (funcall solaire-mode-real-buffer-fn (current-buffer)))
     (solaire-mode +1)))
@@ -152,6 +153,7 @@ Does nothing if it doesn't represent a real, file-visiting buffer (see
 ;;;###autoload
 (defun turn-off-solaire-mode ()
   "Disable `solaire-mode' in the current buffer."
+  (interactive)
   (when solaire-mode
     (solaire-mode -1)))
 
