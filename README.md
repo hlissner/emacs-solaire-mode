@@ -35,15 +35,21 @@ Praise the sun.
 
 ;; brighten buffers (that represent real files)
 (add-hook 'after-change-major-mode-hook #'turn-on-solaire-mode)
+;; To enable solaire-mode unconditionally for certain modes:
+(add-hook 'ediff-prepare-buffer-hook #'solaire-mode)
 
 ;; ...if you use auto-revert-mode:
 (add-hook 'after-revert-hook #'turn-on-solaire-mode)
 
-;; You can do similar with the minibuffer when it is activated:
+;; highlight the minibuffer when it is activated:
 (add-hook 'minibuffer-setup-hook #'solaire-mode-in-minibuffer)
 
-;; To enable solaire-mode unconditionally for certain modes:
-(add-hook 'ediff-prepare-buffer-hook #'solaire-mode)
+;; if the bright and dark background colors are the wrong way around, use this
+;; to switch the backgrounds of the `default` and `solaire-default-face` faces.
+;; This should be used *after* you load the active theme!
+;;
+;; NOTE: This is necessary for themes in the doom-themes package!
+(solaire-mode-swap-bg)
 ```
 
 ## Configuration
@@ -52,8 +58,7 @@ Praise the sun.
 
   + `solaire-default-face`
   + `solaire-minibuffer-face`
-  + `solaire-linum-face`
-  + `solaire-linum-highlight-face`
+  + `solaire-line-number-face`
   + `solaire-hl-line-face`
   + `solaire-org-hide-face`
   + `solaire-mode-line-face`
