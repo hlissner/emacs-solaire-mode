@@ -124,20 +124,20 @@ telephone-line, so it's best to simply turn this off for those plugins."
   ;; Don't reset remapped faces on `kill-all-local-variables'
   (make-variable-buffer-local 'face-remapping-alist)
   (put 'face-remapping-alist 'permanent-local solaire-mode)
-  (if solaire-mode
-      (progn
-        (set-face-background 'fringe (face-background 'solaire-default-face))
-        (setq face-remapping-alist (append solaire-mode-remap-faces face-remapping-alist))
-        (unless solaire-mode-remap-modeline
-          (dolist (fc '(mode-line mode-line-inactive) solaire-mode-remap-faces)
-            (setq face-remapping-alist
-                  (assq-delete-all fc solaire-mode-remap-faces)))))
-    (dolist (remap solaire-mode-remap-faces)
-      (setq face-remapping-alist (delete remap face-remapping-alist)))
-    (unless (cl-loop for buf in (buffer-list)
-                     when (buffer-local-value 'solaire-mode buf)
-                     return t)
-      (set-face-background 'fringe (face-background 'default)))))
+  (cond (solaire-mode
+         (set-face-background 'fringe (face-background 'solaire-default-face))
+         (setq face-remapping-alist (append solaire-mode-remap-faces face-remapping-alist))
+         (unless solaire-mode-remap-modeline
+           (dolist (fc '(mode-line mode-line-inactive) solaire-mode-remap-faces)
+             (setq face-remapping-alist
+                   (assq-delete-all fc solaire-mode-remap-faces)))))
+        (t
+         (dolist (remap solaire-mode-remap-faces)
+           (setq face-remapping-alist (delete remap face-remapping-alist)))
+         (unless (cl-loop for buf in (buffer-list)
+                          when (buffer-local-value 'solaire-mode buf)
+                          return t)
+           (set-face-background 'fringe (face-background 'default))))))
 
 ;;;###autoload
 (defun turn-on-solaire-mode ()
@@ -186,7 +186,7 @@ remap their own faces (like `text-scale-set')."
     (let ((remap (assq (nth 0 args) face-remapping-alist)))
       (when remap (setf (nth 0 args) (cadr remap)))))
   (apply orig-fn args))
-(advice-add 'face-remap-add-relative :around #'solaire-mode--face-remap-add-relative)
+(advice-add #'face-remap-add-relative :around #'solaire-mode--face-remap-add-relative)
 
 (provide 'solaire-mode)
 ;;; solaire-mode.el ends here
