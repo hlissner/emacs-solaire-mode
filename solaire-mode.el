@@ -173,6 +173,15 @@ Does nothing if it doesn't represent a real, file-visiting buffer (see
         (solaire-mode +1)))))
 
 ;;;###autoload
+(defun solaire-mode-swap-bg ()
+  "Swap the backgrounds of the `default' and `solaire-default-face' faces.
+
+This is necessary for themes in the doom-themes package."
+  (let ((bg (face-background 'default)))
+    (set-face-background 'default (face-background 'solaire-default-face))
+    (set-face-background 'solaire-default-face bg)))
+
+;;;###autoload
 (defun solaire-mode-restore-persp-mode-buffers (&rest _)
   "Restore `solaire-mode' in buffers when `persp-mode' loads a session."
   (dolist (buf (persp-buffer-list))
