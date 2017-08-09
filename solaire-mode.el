@@ -5,8 +5,8 @@
 ;; Author: Henrik Lissner <http://github/hlissner>
 ;; Maintainer: Henrik Lissner <henrik@lissner.net>
 ;; Created: Jun 03, 2017
-;; Modified: Jul 18, 2017
-;; Version: 1.0.2
+;; Modified: Aug 09, 2017
+;; Version: 1.0.3
 ;; Keywords: dim bright window buffer faces
 ;; Homepage: https://github.com/hlissner/emacs-solaire-mode
 ;; Package-Requires: ((emacs "24.4") (cl-lib "0.5"))
