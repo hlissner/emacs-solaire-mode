@@ -61,7 +61,7 @@
   :group 'solaire-mode)
 
 (defface solaire-line-number-face
-  `((t (:inherit ,(if (boundp 'display-line-numbers) 'line-number 'linum))))
+  `((t (:inherit (,(if (boundp 'display-line-numbers) 'line-number 'linum) solaire-default-face))))
   "Alternative face for `line-number' (native line numbers in Emacs 26+) and
 `linum'."
   :group 'solaire-mode)
@@ -99,12 +99,22 @@ telephone-line, so it's best to simply turn this off for those plugins."
   :group 'solaire-mode
   :type 'boolean)
 
+(defcustom solaire-mode-remap-line-numbers nil
+  "If non-nil, remap line number faces as well.
+
+Canonically, the `linum' and `line-number' faces should inherit from `default'
+and have no `:background' property; this prevents mismatched backgrounds when
+solaire-mode is active. If your theme doesn't do this, set this to non-nil and
+line number faces will be remapped to `solaire-line-number-face'."
+  :group 'solaire-mode
+  :type 'boolean)
+
 (defcustom solaire-mode-remap-faces
   '((default solaire-default-face)
     (hl-line solaire-hl-line-face)
+    (org-hide solaire-org-hide-face)
     (linum solaire-line-number-face)
     (line-number solaire-line-number-face)
-    (org-hide solaire-org-hide-face)
     (mode-line solaire-mode-line-face)
     (mode-line-inactive solaire-mode-line-inactive-face))
   "An alist of faces to remap when enabling `solaire-mode'."
@@ -127,10 +137,10 @@ telephone-line, so it's best to simply turn this off for those plugins."
   (cond (solaire-mode
          (set-face-background 'fringe (face-background 'solaire-default-face))
          (setq face-remapping-alist (append solaire-mode-remap-faces face-remapping-alist))
-         (unless solaire-mode-remap-modeline
-           (dolist (fc '(mode-line mode-line-inactive) solaire-mode-remap-faces)
-             (setq face-remapping-alist
-                   (assq-delete-all fc solaire-mode-remap-faces)))))
+         (dolist (fc (append (unless solaire-mode-remap-modeline '(mode-line mode-line-inactive))
+                             (unless solaire-mode-remap-line-numbers '(linum line-number))))
+           (setq face-remapping-alist
+                 (assq-delete-all fc solaire-mode-remap-faces))))
         (t
          (dolist (remap solaire-mode-remap-faces)
            (setq face-remapping-alist (delete remap face-remapping-alist)))
