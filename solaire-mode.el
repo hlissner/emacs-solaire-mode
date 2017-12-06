@@ -109,26 +109,27 @@ line number faces will be remapped to `solaire-line-number-face'."
   :group 'solaire-mode
   :type 'boolean)
 
-(defcustom solaire-mode-remap-faces
-  '((default solaire-default-face)
-    (hl-line solaire-hl-line-face)
-    (org-hide solaire-org-hide-face)
-    (linum solaire-line-number-face)
-    (line-number solaire-line-number-face)
-    (mode-line solaire-mode-line-face)
-    (mode-line-inactive solaire-mode-line-inactive-face))
+(defcustom solaire-mode-remap-alist
+  '(((default solaire-default-face)                       . t)
+    ((hl-line solaire-hl-line-face)                       . t)
+    ((org-hide solaire-org-hide-face)                     . t)
+    ((linum solaire-line-number-face)                     . solaire-mode-remap-line-numbers)
+    ((line-number solaire-line-number-face)               . solaire-mode-remap-line-numbers)
+    ((mode-line solaire-mode-line-face)                   . solaire-mode-remap-modeline)
+    ((mode-line-inactive solaire-mode-line-inactive-face) . solaire-mode-remap-modeline)
+    ((highlight-indentation-face soalire-hl-line-face)    . (featurep 'highlight-indentation)))
   "An alist of faces to remap when enabling `solaire-mode'."
   :group 'solaire-mode
   :type '(list face))
 
 (defun solaire-mode--real-buffer-fn (buf)
-  "Return t if the current buffer BUF represents a real file."
+  "Return t if the current buffer BUF represents a real, visited file."
   buffer-file-name)
 
 ;;;###autoload
 (define-minor-mode solaire-mode
   "Make source buffers grossly incandescent by remapping common faces (see
-`solaire-mode-remap-faces') to their solaire-mode variants."
+`solaire-mode-remap-alist') to their solaire-mode variants."
   :lighter "" ; should be obvious it's on
   :init-value nil
   ;; Don't reset remapped faces on `kill-all-local-variables'
@@ -136,14 +137,14 @@ line number faces will be remapped to `solaire-line-number-face'."
   (put 'face-remapping-alist 'permanent-local solaire-mode)
   (cond (solaire-mode
          (set-face-background 'fringe (face-background 'solaire-default-face))
-         (setq face-remapping-alist (append solaire-mode-remap-faces face-remapping-alist))
-         (dolist (fc (append (unless solaire-mode-remap-modeline '(mode-line mode-line-inactive))
-                             (unless solaire-mode-remap-line-numbers '(linum line-number))))
-           (setq face-remapping-alist
-                 (assq-delete-all fc solaire-mode-remap-faces))))
+         (setq face-remapping-alist
+               (append (cl-loop for (map . pred) in solaire-mode-remap-alist
+                                if (eval pred)
+                                collect map)
+                       face-remapping-alist)))
         (t
-         (dolist (remap solaire-mode-remap-faces)
-           (setq face-remapping-alist (delete remap face-remapping-alist)))
+         (dolist (remap solaire-mode-remap-alist)
+           (setq face-remapping-alist (delete (car remap) face-remapping-alist)))
          (unless (cl-loop for buf in (buffer-list)
                           when (buffer-local-value 'solaire-mode buf)
                           return t)
