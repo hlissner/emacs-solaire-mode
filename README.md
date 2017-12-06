@@ -38,7 +38,8 @@ Praise the sun.
 ;; To enable solaire-mode unconditionally for certain modes:
 (add-hook 'ediff-prepare-buffer-hook #'solaire-mode)
 
-;; ...if you use auto-revert-mode:
+;; ...if you use auto-revert-mode, this prevents solaire-mode from turning
+;; itself off every time Emacs reverts the file
 (add-hook 'after-revert-hook #'turn-on-solaire-mode)
 
 ;; highlight the minibuffer when it is activated:
