@@ -176,7 +176,7 @@ Does nothing if it doesn't represent a real, file-visiting buffer (see
                 (append face-remapping-alist '((default solaire-minibuffer-face))))))
 
 ;;;###autoload
-(defun solaire-mode-reset ()
+(defun solaire-mode-reset (&rest _)
   "Reset all buffers with `solaire-mode' enabled."
   (interactive)
   (dolist (buf (buffer-list))
