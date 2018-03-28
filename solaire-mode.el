@@ -1,12 +1,12 @@
 ;;; solaire-mode.el --- make certain buffers grossly incandescent
 ;;
-;; Copyright (C) 2017 Henrik Lissner
+;; Copyright (C) 2017-2018 Henrik Lissner
 ;;
 ;; Author: Henrik Lissner <http://github/hlissner>
 ;; Maintainer: Henrik Lissner <henrik@lissner.net>
 ;; Created: Jun 03, 2017
-;; Modified: Dec 09, 2017
-;; Version: 1.0.4
+;; Modified: March 28, 2018
+;; Version: 1.0.5
 ;; Keywords: dim bright window buffer faces
 ;; Homepage: https://github.com/hlissner/emacs-solaire-mode
 ;; Package-Requires: ((emacs "24.4") (cl-lib "0.5"))
