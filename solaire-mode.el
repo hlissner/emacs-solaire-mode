@@ -185,10 +185,11 @@ Does nothing if it doesn't represent a real, file-visiting buffer (see
         (solaire-mode -1)
         (solaire-mode +1)))))
 
-(defun solaire-mode--swap-bg (face1 face2)
-  (let ((bg (face-background face1)))
-    (set-face-background face1 (face-background face2))
-    (set-face-background face2 bg)))
+(defun solaire-mode--swap (face1 face2 &optional prop)
+  (let* ((prop (or prop :background))
+         (color (face-attribute face1 prop)))
+    (set-face-attribute face1 nil prop (face-attribute face2 prop))
+    (set-face-attribute face2 nil prop color)))
 
 ;;;###autoload
 (defun solaire-mode-swap-bg ()
@@ -196,11 +197,14 @@ Does nothing if it doesn't represent a real, file-visiting buffer (see
 
 + `default' <-> `solaire-default-face'
 + `hl-line' <-> `solaire-hl-line-face'
++ `org-hide' <-> `solaire-org-hide-face'
 
 This is necessary for themes in the doom-themes package."
-  (solaire-mode--swap-bg 'default 'solaire-default-face)
+  (solaire-mode--swap 'default 'solaire-default-face)
   (with-eval-after-load 'hl-line
-    (solaire-mode--swap-bg 'hl-line 'solaire-hl-line-face)))
+    (solaire-mode--swap 'hl-line 'solaire-hl-line-face))
+  (with-eval-after-load 'org
+    (solaire-mode--swap 'org-hide 'solaire-org-hide-face :foreground)))
 
 ;;;###autoload
 (defun solaire-mode-restore-persp-mode-buffers (&rest _)
