@@ -84,7 +84,7 @@ asterixes in `org-mode' when `org-hide-leading-stars' is non-nil."
   :group 'solaire-mode)
 
 ;;
-(defcustom solaire-mode-real-buffer-fn #'solaire-mode--real-buffer-fn
+(defcustom solaire-mode-real-buffer-fn #'solaire-mode--real-buffer-p
   "The function that determines buffer eligability for `solaire-mode'.
 
 Should accept one argument: the buffer."
@@ -122,8 +122,8 @@ line number faces will be remapped to `solaire-line-number-face'."
   :group 'solaire-mode
   :type '(list face))
 
-(defun solaire-mode--real-buffer-fn (buf)
-  "Return t if the current buffer BUF represents a real, visited file."
+(defun solaire-mode--real-buffer-p ()
+  "Return t if the BUF is a file-visiting buffer."
   buffer-file-name)
 
 ;;;###autoload
@@ -158,7 +158,8 @@ Does nothing if it doesn't represent a real, file-visiting buffer (see
 `solaire-mode-real-buffer-fn')."
   (interactive)
   (when (and (not solaire-mode)
-             (funcall solaire-mode-real-buffer-fn (current-buffer)))
+             (not (minibufferp))
+             (funcall solaire-mode-real-buffer-fn))
     (solaire-mode +1)))
 
 ;;;###autoload
