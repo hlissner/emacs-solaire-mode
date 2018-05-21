@@ -34,7 +34,7 @@ Praise the sun.
 (require 'solaire-mode)
 
 ;; brighten buffers (that represent real files)
-(add-hook 'after-change-major-mode-hook #'turn-on-solaire-mode)
+(add-hook 'change-major-mode-hook #'turn-on-solaire-mode)
 ;; To enable solaire-mode unconditionally for certain modes:
 (add-hook 'ediff-prepare-buffer-hook #'solaire-mode)
 

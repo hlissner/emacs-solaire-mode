@@ -30,7 +30,7 @@
 ;;
 ;; Brighten buffers that represent real files:
 ;;
-;;   (add-hook 'after-change-major-mode-hook #'turn-on-solaire-mode)
+;;   (add-hook 'change-major-mode-hook #'turn-on-solaire-mode)
 ;;
 ;; If you use auto-revert-mode:
 ;;
