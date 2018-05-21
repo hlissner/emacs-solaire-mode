@@ -6,7 +6,7 @@
 
 If only certain buffers could be so grossly incandescent.
 
-<a href="http://winkla12.deviantart.com/art/Grossly-Incandescent-438305072">
+<a href="https://winkla12.deviantart.com/art/Grossly-Incandescent-438305072">
   <img src="/../screenshots/praise.jpg" width="100%" />
 </a>
 
@@ -51,6 +51,13 @@ Praise the sun.
 ;;
 ;; NOTE: This is necessary for themes in the doom-themes package!
 (solaire-mode-swap-bg)
+
+;; An alternative for `use-package' users:
+(use-package solaire-mode
+  :hook ((change-major-mode after-revert ediff-prepare-buffer) . turn-on-solaire-mode)
+  :config
+  (add-hook 'minibuffer-setup-hook #'solaire-mode-in-minibuffer)
+  (solaire-mode-swap-bg))
 ```
 
 ## Configuration
