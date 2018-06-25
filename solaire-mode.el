@@ -113,6 +113,7 @@ line number faces will be remapped to `solaire-line-number-face'."
   '(((default solaire-default-face)                       . t)
     ((hl-line solaire-hl-line-face)                       . t)
     ((org-hide solaire-org-hide-face)                     . t)
+    ((org-indent solaire-org-hide-face)                   . t)
     ((linum solaire-line-number-face)                     . solaire-mode-remap-line-numbers)
     ((line-number solaire-line-number-face)               . solaire-mode-remap-line-numbers)
     ((mode-line solaire-mode-line-face)                   . solaire-mode-remap-modeline)
