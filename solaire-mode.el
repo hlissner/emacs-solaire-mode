@@ -134,22 +134,22 @@ line number faces will be remapped to `solaire-line-number-face'."
   :lighter "" ; should be obvious it's on
   :init-value nil
   ;; Don't reset remapped faces on `kill-all-local-variables'
-  (make-variable-buffer-local 'face-remapping-alist)
+  (make-local-variable 'face-remapping-alist)
   (put 'face-remapping-alist 'permanent-local solaire-mode)
-  (cond (solaire-mode
-         (set-face-background 'fringe (face-background 'solaire-default-face))
-         (setq face-remapping-alist
-               (append (cl-loop for (map . pred) in solaire-mode-remap-alist
-                                if (eval pred)
-                                collect map)
-                       face-remapping-alist)))
-        (t
-         (dolist (remap solaire-mode-remap-alist)
-           (setq face-remapping-alist (delete (car remap) face-remapping-alist)))
-         (unless (cl-loop for buf in (buffer-list)
-                          when (buffer-local-value 'solaire-mode buf)
-                          return t)
-           (set-face-background 'fringe (face-background 'default))))))
+  (when face-remapping-alist
+    (dolist (remap solaire-mode-remap-alist)
+      (setq face-remapping-alist (delete (car remap) face-remapping-alist))))
+  (if (not solaire-mode)
+      (unless (cl-loop for buf in (buffer-list)
+                       when (buffer-local-value 'solaire-mode buf)
+                       return t)
+        (set-face-background 'fringe (face-background 'default)))
+    (set-face-background 'fringe (face-background 'solaire-default-face))
+    (setq face-remapping-alist
+          (append (cl-loop for (map . pred) in solaire-mode-remap-alist
+                           if (eval pred)
+                           collect map)
+                  face-remapping-alist))))
 
 ;;;###autoload
 (defun turn-on-solaire-mode ()
