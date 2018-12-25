@@ -178,14 +178,13 @@ Does nothing if it doesn't represent a real, file-visiting buffer (see
                 (append face-remapping-alist '((default solaire-minibuffer-face))))))
 
 ;;;###autoload
-(defun solaire-mode-reset (&rest _)
-  "Reset all buffers with `solaire-mode' enabled."
+(defun solaire-mode-reset (&rest _ignore)
+  "Set `solaire-mode' appropriately in all buffers."
   (interactive)
   (dolist (buf (buffer-list))
     (with-current-buffer buf
-      (when solaire-mode
-        (solaire-mode -1)
-        (solaire-mode +1)))))
+      (solaire-mode -1)
+      (turn-on-solaire-mode))))
 
 (defun solaire-mode--swap (face1 face2 &optional prop)
   (let* ((prop (or prop :background))
