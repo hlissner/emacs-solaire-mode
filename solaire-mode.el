@@ -152,6 +152,9 @@ line number faces will be remapped to `solaire-line-number-face'."
                   face-remapping-alist))))
 
 ;;;###autoload
+(define-globalized-minor-mode solaire-global-mode solaire-mode turn-on-solaire-mode)
+
+;;;###autoload
 (defun turn-on-solaire-mode ()
   "Enable `solaire-mode' in the current buffer.
 
