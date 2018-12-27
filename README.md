@@ -33,8 +33,8 @@ Praise the sun.
 ```emacs-lisp
 (require 'solaire-mode)
 
-;; brighten buffers (that represent real files)
-(add-hook 'change-major-mode-hook #'turn-on-solaire-mode)
+;; Enable solaire-mode anywhere it can be enabled
+(solaire-global-mode +1)
 ;; To enable solaire-mode unconditionally for certain modes:
 (add-hook 'ediff-prepare-buffer-hook #'solaire-mode)
 
