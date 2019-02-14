@@ -146,7 +146,7 @@ line number faces will be remapped to `solaire-line-number-face'."
         (set-face-background 'fringe (face-background 'default)))
     (set-face-background 'fringe (face-background 'solaire-default-face))
     (setq face-remapping-alist
-          (append (cl-loop for (map . pred) in solaire-mode-remap-alist
+          (append (cl-loop for (map . pred) in (copy-seq solaire-mode-remap-alist)
                            if (eval pred)
                            collect map)
                   face-remapping-alist))))
