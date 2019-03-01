@@ -157,10 +157,10 @@ line number faces will be remapped to `solaire-line-number-face'."
 
 ;;;###autoload
 (defun turn-on-solaire-mode ()
-  "Enable `solaire-mode' in the current buffer.
+  "Conditionally enable `solaire-mode' in the current buffer.
 
-Does nothing if it doesn't represent a real, file-visiting buffer (see
-`solaire-mode-real-buffer-fn')."
+Does nothing if the current buffer doesn't satisfy the function in
+`solaire-mode-real-buffer-fn'."
   (interactive)
   (when (and (not solaire-mode)
              (not (minibufferp))
@@ -183,7 +183,11 @@ Does nothing if it doesn't represent a real, file-visiting buffer (see
 
 ;;;###autoload
 (defun solaire-mode-reset (&rest _)
-  "Reset all buffers with `solaire-mode' enabled."
+  "Reset all buffers with `solaire-mode' enabled.
+
+The purpose for this is to reset faces that cannot be buffer-local such as the
+fringe, which can be changed by loading a new theme or opening an Emacs client
+frame with a different display (via emacsclient)."
   (interactive)
   (dolist (buf (buffer-list))
     (with-current-buffer buf
