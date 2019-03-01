@@ -127,30 +127,23 @@ line number faces will be remapped to `solaire-line-number-face'."
   "Return t if the BUF is a file-visiting buffer."
   buffer-file-name)
 
+(defvar solaire-mode--remap-cookies nil)
 ;;;###autoload
 (define-minor-mode solaire-mode
   "Make source buffers grossly incandescent by remapping common faces (see
 `solaire-mode-remap-alist') to their solaire-mode variants."
   :lighter "" ; should be obvious it's on
   :init-value nil
-  ;; Don't reset remapped faces on `kill-all-local-variables'
-  (make-local-variable 'face-remapping-alist)
-  (put 'face-remapping-alist 'permanent-local solaire-mode)
-  (when face-remapping-alist
-    (dolist (remap solaire-mode-remap-alist)
-      (setq face-remapping-alist (delete (car remap) face-remapping-alist))))
+  (mapc #'face-remap-remove-relative solaire-mode--remap-cookies)
   (if (not solaire-mode)
       (unless (cl-loop for buf in (buffer-list)
                        when (buffer-local-value 'solaire-mode buf)
                        return t)
         (set-face-background 'fringe (face-background 'default)))
     (set-face-background 'fringe (face-background 'solaire-default-face))
-    (setq face-remapping-alist
-          (append (cl-loop for (map . pred)
-                           in (copy-sequence solaire-mode-remap-alist)
-                           if (eval pred)
-                           collect map)
-                  face-remapping-alist))))
+    (cl-loop for (map . pred) in (copy-sequence solaire-mode-remap-alist)
+             if (eval pred)
+             do (apply #'face-remap-add-relative map))))
 
 ;;;###autoload
 (define-globalized-minor-mode solaire-global-mode solaire-mode turn-on-solaire-mode)
