@@ -72,7 +72,7 @@ Praise the sun.
   + `solaire-mode-line-face`
   + `solaire-mode-line-inactive-face`
 
-  The only theme(s) that supports this, that I know of, is [doom-themes].
+  The only themes that supports this, that I know of, are [doom-themes] and [solarized-theme].
 
 + What faces get remapped is controlled by `solaire-mode-remap-faces` and
   `solaire-mode-remap-modeline`.
@@ -108,3 +108,4 @@ Praise the sun.
 
 
 [doom-themes]: https://github.com/hlissner/emacs-doom-themes
+[solarized-theme]: https://github.com/bbatsov/solarized-emacs
