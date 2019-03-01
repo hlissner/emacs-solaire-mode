@@ -54,9 +54,10 @@ Praise the sun.
 
 ;; An alternative for `use-package' users:
 (use-package solaire-mode
-  :hook ((change-major-mode after-revert ediff-prepare-buffer) . turn-on-solaire-mode)
+  :hook
+  ((change-major-mode after-revert ediff-prepare-buffer) . turn-on-solaire-mode)
+  (minibuffer-setup . solaire-mode-in-minibuffer)
   :config
-  (add-hook 'minibuffer-setup-hook #'solaire-mode-in-minibuffer)
   (solaire-mode-swap-bg))
 ```
 
