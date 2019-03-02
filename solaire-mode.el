@@ -217,14 +217,5 @@ This is necessary for themes in the doom-themes package."
     (with-current-buffer buf
       (turn-on-solaire-mode))))
 
-(defun solaire-mode--face-remap-add-relative (orig-fn &rest args)
-  "Minimize interference from other themes, functions and/or packages trying to
-remap their own faces (like `text-scale-set')."
-  (when solaire-mode
-    (let ((remap (assq (nth 0 args) face-remapping-alist)))
-      (when remap (setf (nth 0 args) (cadr remap)))))
-  (apply orig-fn args))
-(advice-add #'face-remap-add-relative :around #'solaire-mode--face-remap-add-relative)
-
 (provide 'solaire-mode)
 ;;; solaire-mode.el ends here
