@@ -127,7 +127,7 @@ line number faces will be remapped to `solaire-line-number-face'."
   "Return t if the BUF is a file-visiting buffer."
   buffer-file-name)
 
-(defvar solaire-mode--remap-cookies nil)
+(defvar-local solaire-mode--remap-cookies nil)
 ;;;###autoload
 (define-minor-mode solaire-mode
   "Make source buffers grossly incandescent by remapping common faces (see
@@ -141,9 +141,10 @@ line number faces will be remapped to `solaire-line-number-face'."
                        return t)
         (set-face-background 'fringe (face-background 'default)))
     (set-face-background 'fringe (face-background 'solaire-default-face))
-    (cl-loop for (map . pred) in (copy-sequence solaire-mode-remap-alist)
-             if (eval pred)
-             do (apply #'face-remap-add-relative map))))
+    (setq solaire-mode--remap-cookies
+          (cl-loop for (map . pred) in (copy-sequence solaire-mode-remap-alist)
+                   if (eval pred)
+                   collect (apply #'face-remap-add-relative map)))))
 
 ;;;###autoload
 (define-globalized-minor-mode solaire-global-mode solaire-mode turn-on-solaire-mode)
