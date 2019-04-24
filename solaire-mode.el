@@ -56,6 +56,10 @@
   "Alternative version of the `default' face."
   :group 'solaire-mode)
 
+(defface solaire-fringe-face '((t (:inherit solaire-default-face)))
+  "Alternative version of the `fringe' face."
+  :group 'solaire-mode)
+
 (defface solaire-minibuffer-face '((t (:inherit solaire-default-face)))
   "Alternative face for the minibuffer. See `solaire-mode-in-minibuffer'."
   :group 'solaire-mode)
@@ -109,6 +113,11 @@ line number faces will be remapped to `solaire-line-number-face'."
   :group 'solaire-mode
   :type 'boolean)
 
+(defcustom solaire-mode-remap-fringe t
+  "If non-nil, change the background of the fringe."
+  :group 'solaire-mode
+  :type 'boolean)
+
 (defcustom solaire-mode-remap-alist
   '(((default solaire-default-face)                       . t)
     ((hl-line solaire-hl-line-face)                       . t)
@@ -136,11 +145,13 @@ line number faces will be remapped to `solaire-line-number-face'."
   :init-value nil
   (mapc #'face-remap-remove-relative solaire-mode--remap-cookies)
   (if (not solaire-mode)
-      (unless (cl-loop for buf in (buffer-list)
-                       when (buffer-local-value 'solaire-mode buf)
-                       return t)
+      (when (and solaire-mode-remap-fringe
+                 (not (cl-loop for buf in (buffer-list)
+                               when (buffer-local-value 'solaire-mode buf)
+                               return t)))
         (set-face-background 'fringe (face-background 'default)))
-    (set-face-background 'fringe (face-background 'solaire-default-face))
+    (when solaire-mode-remap-fringe
+      (set-face-background 'fringe (face-background 'solaire-fringe-face)))
     (setq solaire-mode--remap-cookies
           (cl-loop for (map . pred) in (copy-sequence solaire-mode-remap-alist)
                    if (eval pred)
