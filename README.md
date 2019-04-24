@@ -89,6 +89,11 @@ Praise the sun.
 
 + The function in `solaire-mode-real-buffer-fn` determines if a buffer should be
   brightened or not.
+  
++ `solaire-mode-remap-fringe` controls whether the fringe's background is
+  changed (and maintained) when solaire-mode is active. Setting it to `nil` will
+  disable this behavior. To change what background it is changed to, modify the
+  `solaire-fringe-face` face's `:background`.
 
 ## Jolly cooperation with other plugins
 + By default, `solaire-mode` remaps the mode-line faces. This interferes with
