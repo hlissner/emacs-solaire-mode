@@ -151,7 +151,7 @@ line number faces will be remapped to `solaire-line-number-face'."
                                return t)))
         (set-face-background 'fringe (face-background 'default)))
     (when solaire-mode-remap-fringe
-      (set-face-background 'fringe (face-background 'solaire-fringe-face)))
+      (set-face-background 'fringe (face-background 'solaire-fringe-face nil t)))
     (setq solaire-mode--remap-cookies
           (cl-loop for (map . pred) in (copy-sequence solaire-mode-remap-alist)
                    if (eval pred)
