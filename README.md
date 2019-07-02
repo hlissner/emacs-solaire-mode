@@ -74,8 +74,6 @@ Praise the sun.
   + `solaire-mode-line-face`
   + `solaire-mode-line-inactive-face`
 
-  The only theme(s) that supports this, that I know of, is [doom-themes].
-
 + What faces get remapped is controlled by `solaire-mode-remap-faces` and
   `solaire-mode-remap-modeline`.
 
@@ -90,11 +88,17 @@ Praise the sun.
 
 + The function in `solaire-mode-real-buffer-fn` determines if a buffer should be
   brightened or not.
-  
+
 + `solaire-mode-remap-fringe` controls whether the fringe's background is
   changed (and maintained) when solaire-mode is active. Setting it to `nil` will
   disable this behavior. To change what background it is changed to, modify the
   `solaire-fringe-face` face's `:background`.
+
+## Themes that support solaire-mode out of the box
+  The only (known) themes to support solaire-mode are:
+
+  + [doom-themes]
+  + [spacemacs-theme]
 
 ## Jolly cooperation with other plugins
 + By default, `solaire-mode` remaps the mode-line faces. This interferes with
@@ -115,3 +119,4 @@ Praise the sun.
 
 
 [doom-themes]: https://github.com/hlissner/emacs-doom-themes
+[spacemacs-themes]: https://github.com/nashamri/spacemacs-theme
