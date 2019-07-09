@@ -127,7 +127,7 @@ line number faces will be remapped to `solaire-line-number-face'."
     ((line-number solaire-line-number-face)               . solaire-mode-remap-line-numbers)
     ((mode-line solaire-mode-line-face)                   . solaire-mode-remap-modeline)
     ((mode-line-inactive solaire-mode-line-inactive-face) . solaire-mode-remap-modeline)
-    ((highlight-indentation-face soalire-hl-line-face)    . (featurep 'highlight-indentation)))
+    ((highlight-indentation-face solaire-hl-line-face)    . (featurep 'highlight-indentation)))
   "An alist of faces to remap when enabling `solaire-mode'."
   :group 'solaire-mode
   :type '(list face))
