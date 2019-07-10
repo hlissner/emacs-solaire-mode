@@ -119,4 +119,4 @@ Praise the sun.
 
 
 [doom-themes]: https://github.com/hlissner/emacs-doom-themes
-[spacemacs-themes]: https://github.com/nashamri/spacemacs-theme
+[spacemacs-theme]: https://github.com/nashamri/spacemacs-theme
