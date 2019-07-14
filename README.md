@@ -99,6 +99,7 @@ Praise the sun.
 
   + [doom-themes]
   + [spacemacs-theme]
+  + [wilmersdorf-theme]
 
 ## Jolly cooperation with other plugins
 + By default, `solaire-mode` remaps the mode-line faces. This interferes with
@@ -120,3 +121,4 @@ Praise the sun.
 
 [doom-themes]: https://github.com/hlissner/emacs-doom-themes
 [spacemacs-theme]: https://github.com/nashamri/spacemacs-theme
+[wilmersdorf-theme]: https://github.com/ianpan870102/wilmersdorf-emacs-theme
