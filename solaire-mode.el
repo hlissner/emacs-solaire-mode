@@ -95,6 +95,22 @@ Should accept one argument: the buffer."
   :group 'solaire-mode
   :type 'function)
 
+(defcustom solaire-mode-auto-swap-bg nil
+  "If non-nil, swap the backgrounds of faces and their solaire counterparts.
+
+How solaire-mode works is it remaps many faces to solaire-mode counterparts. In
+order to make file-visiting buffers \"brighter\", it remaps `default' with
+`solaire-default-face', and has to assume that the latter has the brighter
+:background. Or more specifically, it is assumed that `default' will be the
+\"darker\" face. Since this isn't always the case, it is sometimes necessary to
+call `solaire-mode-swap-bg' to swap them.
+
+Setting this to non-nil will do so automatically when a theme is loaded.
+
+See `solaire-mode-swap-bg' for specifics."
+  :group 'solaire-mode
+  :type 'boolean)
+
 (defcustom solaire-mode-remap-modeline t
   "If non-nil, remap mode-line faces as well.
 
@@ -132,6 +148,8 @@ line number faces will be remapped to `solaire-line-number-face'."
   :group 'solaire-mode
   :type '(list face))
 
+(defvar solaire-mode--pending-bg-swap nil)
+
 (defun solaire-mode--real-buffer-p ()
   "Return t if the BUF is a file-visiting buffer."
   buffer-file-name)
@@ -143,6 +161,8 @@ line number faces will be remapped to `solaire-line-number-face'."
 `solaire-mode-remap-alist') to their solaire-mode variants."
   :lighter "" ; should be obvious it's on
   :init-value nil
+  (when solaire-mode--pending-bg-swap
+    (solaire-mode-swap-bg))
   (mapc #'face-remap-remove-relative solaire-mode--remap-cookies)
   (if (not solaire-mode)
       (when (and solaire-mode-remap-fringe
@@ -215,11 +235,18 @@ frame with a different display (via emacsclient)."
 + `org-hide' <-> `solaire-org-hide-face'
 
 This is necessary for themes in the doom-themes package."
-  (solaire-mode--swap 'default 'solaire-default-face)
-  (with-eval-after-load 'hl-line
-    (solaire-mode--swap 'hl-line 'solaire-hl-line-face))
-  (with-eval-after-load 'org
-    (solaire-mode--swap 'org-hide 'solaire-org-hide-face :foreground)))
+  (when (or (null solaire-mode-auto-swap-bg)
+            solaire-mode--pending-bg-swap)
+    (solaire-mode--swap 'default 'solaire-default-face)
+    (with-eval-after-load 'hl-line
+      (solaire-mode--swap 'hl-line 'solaire-hl-line-face))
+    (with-eval-after-load 'org
+      (solaire-mode--swap 'org-hide 'solaire-org-hide-face :foreground))
+    (with-eval-after-load 'ansi-color
+      (let ((color (face-background 'default)))
+        (when (stringp color)
+          (setf (aref ansi-color-names-vector 0) color))))
+    (setq solaire-mode--pending-bg-swap nil)))
 
 ;;;###autoload
 (defun solaire-mode-fix-latex-preview-background ()
@@ -241,6 +268,11 @@ This is necessary for themes in the doom-themes package."
   (dolist (buf (persp-buffer-list))
     (with-current-buffer buf
       (turn-on-solaire-mode))))
+
+;;;###autoload
+(advice-add #'load-theme :after
+            (lambda (&rest _)
+              (setq solaire-mode--pending-bg-swap solaire-mode-auto-swap-bg)))
 
 (provide 'solaire-mode)
 ;;; solaire-mode.el ends here
