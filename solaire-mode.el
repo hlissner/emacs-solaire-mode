@@ -272,7 +272,8 @@ This is necessary for themes in the doom-themes package."
 ;;;###autoload
 (advice-add #'load-theme :after
             (lambda (&rest _)
-              (setq solaire-mode--pending-bg-swap solaire-mode-auto-swap-bg)))
+              (setq solaire-mode--pending-bg-swap
+                    (bound-and-true-p solaire-mode-auto-swap-bg))))
 
 (provide 'solaire-mode)
 ;;; solaire-mode.el ends here
