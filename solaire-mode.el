@@ -87,6 +87,10 @@ asterixes in `org-mode' when `org-hide-leading-stars' is non-nil."
   "Alternative face for the inactive mode line."
   :group 'solaire-mode)
 
+(defface solaire-header-line-face '((t (:inherit header-line)))
+  "Alternative face for the header line."
+  :group 'solaire-mode)
+
 ;;
 (defcustom solaire-mode-real-buffer-fn #'solaire-mode--real-buffer-p
   "The function that determines buffer eligability for `solaire-mode'.
@@ -108,6 +112,11 @@ call `solaire-mode-swap-bg' to swap them.
 Setting this to non-nil will do so automatically when a theme is loaded.
 
 See `solaire-mode-swap-bg' for specifics."
+  :group 'solaire-mode
+  :type 'boolean)
+
+(defcustom solaire-mode-remap-headerline t
+  "If non-nil, remap the `header-line' face as well."
   :group 'solaire-mode
   :type 'boolean)
 
@@ -141,6 +150,7 @@ line number faces will be remapped to `solaire-line-number-face'."
     ((org-indent solaire-org-hide-face)                   . t)
     ((linum solaire-line-number-face)                     . solaire-mode-remap-line-numbers)
     ((line-number solaire-line-number-face)               . solaire-mode-remap-line-numbers)
+    ((header-line solaire-mode-line-face)                 . solaire-mode-remap-headerline)
     ((mode-line solaire-mode-line-face)                   . solaire-mode-remap-modeline)
     ((mode-line-inactive solaire-mode-line-inactive-face) . solaire-mode-remap-modeline)
     ((highlight-indentation-face solaire-hl-line-face)    . (featurep 'highlight-indentation)))
