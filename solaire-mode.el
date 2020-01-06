@@ -259,20 +259,6 @@ This is necessary for themes in the doom-themes package."
     (setq solaire-mode--pending-bg-swap nil)))
 
 ;;;###autoload
-(defun solaire-mode-fix-latex-preview-background ()
-  "Fixes `org-mode' to display latex previews with the correct background."
-  ;; Fix #24
-  (when (eq major-mode 'org-mode)
-    (setq-default
-     org-format-latex-options
-     (plist-put org-format-latex-options
-                :background
-                (face-background (or (cadr (assq 'default face-remapping-alist))
-                                     'default)
-                                 nil t)))))
-(add-hook 'solaire-mode-hook #'solaire-mode-fix-latex-preview-background)
-
-;;;###autoload
 (defun solaire-mode-restore-persp-mode-buffers (&rest _)
   "Restore `solaire-mode' in buffers when `persp-mode' loads a session."
   (dolist (buf (persp-buffer-list))
