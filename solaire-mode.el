@@ -6,7 +6,7 @@
 ;; Maintainer: Henrik Lissner <henrik@lissner.net>
 ;; Created: Jun 03, 2017
 ;; Modified: January 5, 2020
-;; Version: 1.1.1
+;; Version: 1.1.2
 ;; Keywords: dim bright window buffer faces
 ;; Homepage: https://github.com/hlissner/emacs-solaire-mode
 ;; Package-Requires: ((emacs "24.4") (cl-lib "0.5"))
@@ -150,7 +150,7 @@ line number faces will be remapped to `solaire-line-number-face'."
     ((org-indent solaire-org-hide-face)                   . t)
     ((linum solaire-line-number-face)                     . solaire-mode-remap-line-numbers)
     ((line-number solaire-line-number-face)               . solaire-mode-remap-line-numbers)
-    ((header-line solaire-header-line-face)                 . solaire-mode-remap-headerline)
+    ((header-line solaire-header-line-face)               . solaire-mode-remap-headerline)
     ((mode-line solaire-mode-line-face)                   . solaire-mode-remap-modeline)
     ((mode-line-inactive solaire-mode-line-inactive-face) . solaire-mode-remap-modeline)
     ((highlight-indentation-face solaire-hl-line-face)    . (featurep 'highlight-indentation)))
