@@ -138,8 +138,8 @@ line number faces will be remapped to `solaire-line-number-face'."
   :group 'solaire-mode
   :type 'boolean)
 
-(defcustom solaire-mode-remap-fringe t
-  "If non-nil, change the background of the fringe."
+(defcustom solaire-mode-remap-fringe (not (version<= emacs-version "26"))
+  "If non-nil, remap the fringe using `face-remap', otherwise change the face globally."
   :group 'solaire-mode
   :type 'boolean)
 
@@ -148,6 +148,7 @@ line number faces will be remapped to `solaire-line-number-face'."
     ((hl-line solaire-hl-line-face)                       . t)
     ((org-hide solaire-org-hide-face)                     . t)
     ((org-indent solaire-org-hide-face)                   . t)
+    ((fringe solaire-fringe-face)                         . (and solaire-mode-remap-fringe (display-graphic-p)))
     ((linum solaire-line-number-face)                     . solaire-mode-remap-line-numbers)
     ((line-number solaire-line-number-face)               . solaire-mode-remap-line-numbers)
     ((header-line solaire-header-line-face)               . solaire-mode-remap-headerline)
@@ -173,19 +174,45 @@ line number faces will be remapped to `solaire-line-number-face'."
   :init-value nil
   (when solaire-mode--pending-bg-swap
     (solaire-mode-swap-bg))
+  (unless solaire-mode-remap-fringe
+    (solaire-mode-reset-fringe-face solaire-mode))
   (mapc #'face-remap-remove-relative solaire-mode--remap-cookies)
-  (if (not solaire-mode)
-      (when (and solaire-mode-remap-fringe
-                 (not (cl-loop for buf in (buffer-list)
-                               when (buffer-local-value 'solaire-mode buf)
-                               return t)))
-        (set-face-background 'fringe (face-background 'default)))
-    (when solaire-mode-remap-fringe
-      (set-face-background 'fringe (face-background 'solaire-fringe-face nil t)))
-    (setq solaire-mode--remap-cookies
-          (cl-loop for (map . pred) in (copy-sequence solaire-mode-remap-alist)
-                   if (eval pred)
-                   collect (apply #'face-remap-add-relative map)))))
+  (when solaire-mode
+    (and (setq solaire-mode--remap-cookies
+               (cl-loop for (map . pred) in (copy-sequence solaire-mode-remap-alist)
+                        if (eval pred)
+                        collect (apply #'face-remap-add-relative map)))
+         ;; Update the fringe, in case it was remapped. We don't cycle
+         ;; `fringe-mode' because it affects all frames, which is overkill.
+         (when (and (bound-and-true-p fringe-mode)
+                    (display-graphic-p)
+                    solaire-mode-remap-fringe)
+           (modify-frame-parameters
+            nil (list (cons 'left-fringe
+                            (if (consp fringe-mode)
+                                (car fringe-mode)
+                              fringe-mode))
+                      (cons 'right-fringe
+                            (if (consp fringe-mode)
+                                (cdr fringe-mode)
+                              fringe-mode))))))))
+
+(defun solaire-mode-reset-fringe-face (arg)
+  "Toggle the `fringe's new background.
+
+This is only necessary for Emacs 26 and below. Emacs 27 and above support
+remapping the fringe buffer-locally.
+
+If ARG is non-nil, match `solaire-fringe-face's background, otherwise
+`default's."
+  (set-face-background
+   'fringe
+   (if (or (null arg) (eq arg -1))
+       (unless (cl-loop for buf in (buffer-list)
+                        if (buffer-local-value 'solaire-mode buf)
+                        return t)
+         (face-background 'default))
+     (face-background 'solaire-fringe-face nil t))))
 
 ;;;###autoload
 (define-globalized-minor-mode solaire-global-mode solaire-mode turn-on-solaire-mode)
