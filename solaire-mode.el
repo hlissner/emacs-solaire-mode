@@ -163,7 +163,7 @@ line number faces will be remapped to `solaire-line-number-face'."
 
 (defun solaire-mode--real-buffer-p ()
   "Return t if the BUF is a file-visiting buffer."
-  buffer-file-name)
+  (buffer-file-name (buffer-base-buffer)))
 
 (defvar-local solaire-mode--remap-cookies nil)
 ;;;###autoload
