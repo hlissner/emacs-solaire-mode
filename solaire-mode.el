@@ -301,9 +301,8 @@ This is necessary for themes in the doom-themes package."
 ;;;###autoload
 (advice-add #'load-theme :before
             (lambda (_theme &optional _no-confirm no-enable)
-              (and (not no-enable)
-                   (custom-theme-p 'solaire-swap-bg-theme)
-                   (disable-theme 'solaire-swap-bg-theme))))
+              (unless no-enable
+                (disable-theme 'solaire-swap-bg-theme))))
 
 ;;;###autoload
 (advice-add #'load-theme :after
