@@ -260,8 +260,10 @@ frame with a different display (via emacsclient)."
 (defun solaire-mode--swap (face1 face2 &optional prop)
   (let* ((prop (or prop :background))
          (color (face-attribute face1 prop)))
-    (set-face-attribute face1 nil prop (face-attribute face2 prop))
-    (set-face-attribute face2 nil prop color)))
+    (custom-theme-set-faces
+     'solaire-swap-bg-theme
+     `(,face1 ((t (,prop ,(face-attribute face2 prop)))))
+     `(,face2 ((t (,prop ,color)))))))
 
 ;;;###autoload
 (defun solaire-mode-swap-bg ()
@@ -274,16 +276,20 @@ frame with a different display (via emacsclient)."
 This is necessary for themes in the doom-themes package."
   (when (or (null solaire-mode-auto-swap-bg)
             solaire-mode--pending-bg-swap)
-    (solaire-mode--swap 'default 'solaire-default-face)
-    (with-eval-after-load 'hl-line
-      (solaire-mode--swap 'hl-line 'solaire-hl-line-face))
-    (with-eval-after-load 'org
-      (solaire-mode--swap 'org-hide 'solaire-org-hide-face :foreground))
-    (with-eval-after-load 'ansi-color
-      (let ((color (face-background 'default)))
-        (when (stringp color)
-          (setf (aref ansi-color-names-vector 0) color))))
-    (setq solaire-mode--pending-bg-swap nil)))
+    (let ((theme 'solaire-swap-bg-theme))
+      (custom-declare-theme theme nil)
+      (put theme 'theme-settings nil)
+      (solaire-mode--swap 'default 'solaire-default-face)
+      (with-eval-after-load 'hl-line
+        (solaire-mode--swap 'hl-line 'solaire-hl-line-face))
+      (with-eval-after-load 'org
+        (solaire-mode--swap 'org-hide 'solaire-org-hide-face :foreground))
+      (with-eval-after-load 'ansi-color
+        (let ((color (face-background 'default)))
+          (when (stringp color)
+            (setf (aref ansi-color-names-vector 0) color))))
+      (enable-theme theme)
+      (setq solaire-mode--pending-bg-swap nil))))
 
 ;;;###autoload
 (defun solaire-mode-restore-persp-mode-buffers (&rest _)
@@ -291,6 +297,13 @@ This is necessary for themes in the doom-themes package."
   (dolist (buf (persp-buffer-list))
     (with-current-buffer buf
       (turn-on-solaire-mode))))
+
+;;;###autoload
+(advice-add #'load-theme :before
+            (lambda (_theme &optional _no-confirm no-enable)
+              (and (not no-enable)
+                   (custom-theme-p 'solaire-swap-bg-theme)
+                   (disable-theme 'solaire-swap-bg-theme))))
 
 ;;;###autoload
 (advice-add #'load-theme :after
