@@ -271,7 +271,6 @@ frame with a different display (via emacsclient)."
 
 + `default' <-> `solaire-default-face'
 + `hl-line' <-> `solaire-hl-line-face'
-+ `org-hide' <-> `solaire-org-hide-face'
 
 This is necessary for themes in the doom-themes package."
   (when (or (null solaire-mode-auto-swap-bg)
@@ -282,8 +281,6 @@ This is necessary for themes in the doom-themes package."
       (solaire-mode--swap 'default 'solaire-default-face)
       (with-eval-after-load 'hl-line
         (solaire-mode--swap 'hl-line 'solaire-hl-line-face))
-      (with-eval-after-load 'org
-        (solaire-mode--swap 'org-hide 'solaire-org-hide-face :foreground))
       (with-eval-after-load 'ansi-color
         (let ((color (face-background 'default)))
           (when (stringp color)
