@@ -97,6 +97,19 @@ asterixes in `org-mode' when `org-hide-leading-stars' is non-nil."
 
 
 ;;
+;;; Plugin faces
+
+;; Forward-define these so I don't have to load their packages to manipulate
+;; them (in `solaire-mode--swap-bg-faces-maybe').
+
+(defface hl-line
+  '((t :inherit highlight :extend t))
+  "Default face for highlighting the current line in Hl-Line mode."
+  :version "22.1"
+  :group 'hl-line)
+
+
+;;
 ;;; Options
 
 (defcustom solaire-mode-real-buffer-fn #'solaire-mode--real-buffer-p
@@ -198,15 +211,15 @@ non-nil), `solaire-mode--swap-bg-faces-maybe' is used."
                          ((symbolp rule) (eq solaire-mode--current-theme rule)))
                 return t)))
 
-(defun solaire-mode--swap-faces (theme face1 face2 &optional prop)
-  (when (eq theme solaire-mode--current-theme)
-    (let* ((prop (or prop :background))
-           (color (face-attribute face1 prop)))
-      (custom-theme-set-faces
-       'solaire-swap-bg-theme
-       `(,face1 ((t (,prop ,(face-attribute face2 prop)))))
-       `(,face2 ((t (,prop ,color))))))))
+(defun solaire-mode--swap-faces (face1 face2 &optional prop)
+  (let* ((prop (or prop :background))
+         (color (face-attribute face1 prop nil)))
+    (custom-theme-set-faces
+     'solaire-swap-bg-theme
+     `(,face1 ((t (,prop ,(face-attribute face2 prop nil)))))
+     `(,face2 ((t (,prop ,color)))))))
 
+(defvar ansi-color-names-vector)
 (defun solaire-mode--swap-bg-faces-maybe ()
   "Swap the backgrounds of the following faces:
 
@@ -215,22 +228,21 @@ non-nil), `solaire-mode--swap-bg-faces-maybe' is used."
 
 This is necessary for themes in the doom-themes package."
   (when (solaire-mode--swap-bg-faces-p)
-    (let ((theme solaire-mode--current-theme)
-          (swap-theme 'solaire-swap-bg-theme))
+    (let ((swap-theme 'solaire-swap-bg-theme))
       (custom-declare-theme swap-theme nil)
       (when (custom-theme-enabled-p swap-theme)
-        (disable-theme 'solaire-swap-bg-theme))
+        (disable-theme swap-theme))
       (put swap-theme 'theme-settings nil)
-      (solaire-mode--swap-faces theme 'default 'solaire-default-face)
-      (with-eval-after-load 'hl-line
-        (solaire-mode--swap-faces theme 'hl-line 'solaire-hl-line-face))
-      (with-eval-after-load 'ansi-color
-        (when (eq theme solaire-mode--current-theme)
-          (let ((color (face-background 'default)))
-            (when (stringp color)
-              (setf (aref ansi-color-names-vector 0) color)))))
-      (enable-theme swap-theme)
-      (setq solaire-mode--bg-swapped t))))
+      (solaire-mode--swap-faces 'default 'solaire-default-face)
+      (solaire-mode--swap-faces 'hl-line 'solaire-hl-line-face)
+      (let ((default-bg (face-background 'default))
+            (theme solaire-mode--current-theme))
+        (with-eval-after-load 'ansi-color
+          (when (eq theme solaire-mode--current-theme)
+            (when (stringp default-bg)
+              (setf (aref ansi-color-names-vector 0) default-bg))))
+        (enable-theme swap-theme)
+        (setq solaire-mode--bg-swapped t)))))
 
 
 (defvar-local solaire-mode--remap-cookies nil)
