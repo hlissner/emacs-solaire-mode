@@ -28,39 +28,54 @@ Praise the sun.
 
 ## Install
 
-`M-x package-install RET solaire-mode`
+Solaire-mode is available on MELPA: `M-x package-install RET solaire-mode`
+
+### Doom Emacs
+
+Doom installs this package as part of the `:ui doom` module. No additional
+configuration is needed.
+
+
+## Configuration
+
+`solaire-mode` (or `solaire-global-mode`) must be activated before your theme is
+loaded:
 
 ```emacs-lisp
-(require 'solaire-mode)
-
-;; Enable solaire-mode anywhere it can be enabled
 (solaire-global-mode +1)
-;; To enable solaire-mode unconditionally for certain modes:
-(add-hook 'ediff-prepare-buffer-hook #'solaire-mode)
 
-;; ...if you use auto-revert-mode, this prevents solaire-mode from turning
-;; itself off every time Emacs reverts the file
-(add-hook 'after-revert-hook #'turn-on-solaire-mode)
-
-;; highlight the minibuffer when it is activated:
-(add-hook 'minibuffer-setup-hook #'solaire-mode-in-minibuffer)
-
-;; if the bright and dark background colors are the wrong way around, use this
-;; to switch the backgrounds of the `default` and `solaire-default-face` faces.
-;; This should be used *after* you load the active theme!
-;;
-;; NOTE: This is necessary for themes in the doom-themes package!
-(solaire-mode-swap-bg)
-
-;; An alternative for `use-package' users:
-(use-package solaire-mode
-  :hook
-  ((change-major-mode after-revert ediff-prepare-buffer) . turn-on-solaire-mode)
-  (minibuffer-setup . solaire-mode-in-minibuffer)
-  :config
-  (solaire-global-mode +1)
-  (solaire-mode-swap-bg))
+(load-theme 'my-theme t)
 ```
+
+Here are some example `use-package` configs for `solaire-mode`:
+
+```emacs-lisp
+;; A simple config:
+(use-package solaire-mode
+  :hook (after-init . solaire-global-mode))
+
+
+;; A more complex, more lazy-loaded config
+(use-package solaire-mode
+  ;; Ensure solaire-mode is running in all solaire-mode buffers
+  :hook (change-major-mode . turn-on-solaire-mode)
+  ;; ...if you use auto-revert-mode, this prevents solaire-mode from turning
+  ;; itself off every time Emacs reverts the file
+  :hook (after-revert . turn-on-solaire-mode)
+  ;; To enable solaire-mode unconditionally for certain modes:
+  :hook (ediff-prepare-buffer . solaire-mode)
+  ;; Highlight the minibuffer when it is activated:
+  :hook (minibuffer-setup . solaire-mode-in-minibuffer)
+  :config
+  ;; The bright and dark background colors are automatically swapped the first 
+  ;; time solaire-mode is activated. Namely, the backgrounds of the `default` and
+  ;; `solaire-default-face` faces are swapped. This is done because the colors 
+  ;; are usually the wrong way around. If you don't want this, you can disable it:
+  (setq solaire-mode-auto-swap-bg nil)
+
+  (solaire-global-mode +1))
+```
+
 
 ## Configuration
 + By default, `solaire-mode`'s effects will be invisible. Its faces must be
