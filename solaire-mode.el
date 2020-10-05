@@ -363,6 +363,7 @@ frame with a different display (via emacsclient)."
 (defun solaire-mode--fix-org-latex-bg (orig-fn attr)
   "Advice for background color mismatch in org latex previews.
 Only works if :background is set to `default' in `org-format-latex-options'."
+  (turn-on-solaire-mode)
   (if solaire-mode
       (cl-letf*
           ((face-attribute (symbol-function #'face-attribute))
