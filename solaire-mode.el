@@ -357,6 +357,27 @@ frame with a different display (via emacsclient)."
 (add-hook 'solaire-global-mode-hook #'solaire-mode--swap-bg-faces-maybe)
 
 
+;;
+;;; Compatibility
+
+(defun solaire-mode--fix-org-latex-bg (orig-fn attr)
+  "Advice for background color mismatch in org latex previews.
+Only works if :background is set to `default' in `org-format-latex-options'."
+  (if solaire-mode
+      (cl-letf*
+          ((face-attribute (symbol-function #'face-attribute))
+           ((symbol-function #'face-attribute)
+            (lambda (_face attr &optional frame _inherit)
+              (car (delq 'unspecified
+                         (mapcar (lambda (face)
+                                   (funcall face-attribute face attr frame nil))
+                                 '(solaire-default-face default)))))))
+        (funcall orig-fn attr))
+    (funcall orig-fn attr)))
+(advice-add #'org-latex-color  :around #'solaire-mode--fix-org-latex-bg)
+(advice-add #'org-dvipng-color :around #'solaire-mode--fix-org-latex-bg)
+
+
 ;;; Deprecated
 
 ;;;###autoload

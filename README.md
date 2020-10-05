@@ -117,6 +117,14 @@ Here are some example `use-package` configs for `solaire-mode`:
   + [wilmersdorf-theme]
 
 ## Jolly cooperation with other plugins
++ Latex previews in org-mode may have a mismatched background color. You can fix
+  this by setting the `:background` property in `org-format-latex-options` to
+  `'default`:
+  
+  ```elisp
+  (with-eval-after-load 'org
+    (plist-put org-format-latex-options :background 'default))
+  ```
 + By default, `solaire-mode` remaps the mode-line faces. This interferes with
   certain mode-line packages like telephone-line or powerline. You can undo this
   with:
