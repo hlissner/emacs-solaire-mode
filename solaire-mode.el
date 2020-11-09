@@ -360,23 +360,39 @@ frame with a different display (via emacsclient)."
 ;;
 ;;; Compatibility
 
-(defun solaire-mode--fix-org-latex-bg (orig-fn attr)
-  "Advice for background color mismatch in org latex previews.
-Only works if :background is set to `default' in `org-format-latex-options'."
-  (turn-on-solaire-mode)
-  (if solaire-mode
-      (cl-letf*
-          ((face-attribute (symbol-function #'face-attribute))
-           ((symbol-function #'face-attribute)
-            (lambda (_face attr &optional frame _inherit)
-              (car (delq 'unspecified
-                         (mapcar (lambda (face)
-                                   (funcall face-attribute face attr frame nil))
-                                 '(solaire-default-face default)))))))
-        (funcall orig-fn attr))
-    (funcall orig-fn attr)))
-(advice-add #'org-latex-color  :around #'solaire-mode--fix-org-latex-bg)
-(advice-add #'org-dvipng-color :around #'solaire-mode--fix-org-latex-bg)
+(defun solaire-mode--org-bg ()
+  (if (memq 'native org-highlight-latex-and-related)
+      (face-background 'org-block nil t)
+    (face-background 'solaire-default-face nil t)))
+
+(defun solaire-mode--org-latex-bg (orig-fn &rest args)
+  "Fix latex previews finding the wrong background color when solaire is on.
+
+Only kicks in if :background is set to `default' in `org-format-latex-options'."
+  (let ((org-format-latex-options
+         (org-combine-plists
+          org-format-latex-options
+          (when solaire-mode
+            (append (if (eq (plist-get org-format-latex-options :foreground) 'default)
+                        `(:foreground ,(face-foreground 'solaire-default-face nil t)))
+                    (if (eq (plist-get org-format-latex-options :background) 'default)
+                        `(:background ,(solaire-mode--org-bg))))))))
+    (apply orig-fn args)))
+(advice-add #'org-format-latex :around #'solaire-mode--org-latex-bg)
+(advice-add #'org-create-formula-image :around #'solaire-mode--org-latex-bg)
+
+(defun solaire-mode--org-put-bg-for-preview-overlay (beg end _image &optional _imagetype)
+  "Adds a `:background' to the preview overlay.
+
+Otherwise, Emacs uses the non-solaire-remapped `default' face as their
+background, which stands out as unnatural."
+  (let ((ov (cl-find-if (lambda (o) (overlay-get o 'org-overlay-type))
+                        (overlays-in beg end))))
+    (overlay-put
+     ov 'display
+     (append (overlay-get ov 'display)
+             (if solaire-mode (list :background (solaire-mode--org-bg)))))))
+(advice-add #'org--make-preview-overlay :after #'solaire-mode--org-put-bg-for-preview-overlay)
 
 
 ;;; Deprecated
