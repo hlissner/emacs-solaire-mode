@@ -115,6 +115,7 @@ Here are some example `use-package` configs for `solaire-mode`:
   + [doom-themes]
   + [spacemacs-theme]
   + [wilmersdorf-theme]
+  + [modus-themes]
 
 ## Jolly cooperation with other plugins
 + Latex previews in org-mode may have a mismatched background color. You can fix
@@ -145,3 +146,4 @@ Here are some example `use-package` configs for `solaire-mode`:
 [doom-themes]: https://github.com/hlissner/emacs-doom-themes
 [spacemacs-theme]: https://github.com/nashamri/spacemacs-theme
 [wilmersdorf-theme]: https://github.com/ianpan870102/wilmersdorf-emacs-theme
+[modus-themes]: https://gitlab.com/protesilaos/modus-themes
