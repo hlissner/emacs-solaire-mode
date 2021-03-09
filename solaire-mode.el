@@ -252,29 +252,31 @@ This is necessary for themes in the doom-themes package."
 `solaire-mode-remap-alist') to their solaire-mode variants."
   :lighter "" ; should be obvious it's on
   :init-value nil
-  (solaire-mode--swap-bg-faces-maybe)
-  (unless solaire-mode-remap-fringe
-    (solaire-mode-reset-fringe-face solaire-mode))
-  (mapc #'face-remap-remove-relative solaire-mode--remap-cookies)
-  (when solaire-mode
-    (and (setq solaire-mode--remap-cookies
-               (cl-loop for (map . pred) in (copy-sequence solaire-mode-remap-alist)
-                        if (eval pred)
-                        collect (apply #'face-remap-add-relative map)))
-         ;; Update the fringe, in case it was remapped. We don't cycle
-         ;; `fringe-mode' because it affects all frames, which is overkill.
-         (when (and (bound-and-true-p fringe-mode)
-                    (display-graphic-p)
-                    solaire-mode-remap-fringe)
-           (modify-frame-parameters
-            nil (list (cons 'left-fringe
-                            (if (consp fringe-mode)
-                                (car fringe-mode)
-                              fringe-mode))
-                      (cons 'right-fringe
-                            (if (consp fringe-mode)
-                                (cdr fringe-mode)
-                              fringe-mode))))))))
+  (if (not (face-background 'solaire-default-face))
+      (setq solaire-mode nil)
+    (solaire-mode--swap-bg-faces-maybe)
+    (unless solaire-mode-remap-fringe
+      (solaire-mode-reset-fringe-face solaire-mode))
+    (mapc #'face-remap-remove-relative solaire-mode--remap-cookies)
+    (when solaire-mode
+      (and (setq solaire-mode--remap-cookies
+                 (cl-loop for (map . pred) in (copy-sequence solaire-mode-remap-alist)
+                          if (eval pred)
+                          collect (apply #'face-remap-add-relative map)))
+           ;; Update the fringe, in case it was remapped. We don't cycle
+           ;; `fringe-mode' because it affects all frames, which is overkill.
+           (when (and (bound-and-true-p fringe-mode)
+                      (display-graphic-p)
+                      solaire-mode-remap-fringe)
+             (modify-frame-parameters
+              nil (list (cons 'left-fringe
+                              (if (consp fringe-mode)
+                                  (car fringe-mode)
+                                fringe-mode))
+                        (cons 'right-fringe
+                              (if (consp fringe-mode)
+                                  (cdr fringe-mode)
+                                fringe-mode)))))))))
 
 (defun solaire-mode-reset-fringe-face (arg)
   "Toggle the `fringe's new background.
