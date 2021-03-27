@@ -334,9 +334,20 @@ frame with a different display (via emacsclient)."
   (interactive)
   (dolist (buf (buffer-list))
     (with-current-buffer buf
-      (when solaire-mode
-        (solaire-mode -1)
-        (solaire-mode +1)))))
+      (solaire-mode-reset-buffer))))
+
+;;;###autoload
+(defun solaire-mode-reset-buffer ()
+  "Reset `solaire-mode' incurrent buffer.
+See `solaire-mode-reset' for details."
+  (when solaire-mode
+    (solaire-mode -1)
+    (solaire-mode +1)))
+
+;; Reset solaire-mode so its remappings assimilate the remappings done by
+;; `mixed-pitch-mode' and `variable-pitch-mode'.
+(add-hook 'mixed-pitch-mode-hook #'solaire-mode-reset-buffer)
+(add-hook 'buffer-face-mode-hook #'solaire-mode-reset-buffer)
 
 ;;;###autoload
 (advice-add #'load-theme :before
