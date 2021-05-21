@@ -1,6 +1,6 @@
 ;;; solaire-mode.el --- make certain buffers grossly incandescent -*- lexical-binding: t; -*-
 ;;
-;; Copyright (C) 2017-2020 Henrik Lissner
+;; Copyright (C) 2017-2021 Henrik Lissner
 ;;
 ;; Author: Henrik Lissner <http://github/hlissner>
 ;; Maintainer: Henrik Lissner <henrik@lissner.net>
