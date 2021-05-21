@@ -69,7 +69,8 @@
   :group 'solaire-mode)
 
 (defface solaire-line-number-face
-  `((t (:inherit (,(if (boundp 'display-line-numbers) 'line-number 'linum) solaire-default-face))))
+  `((t (:inherit (,(if (boundp 'display-line-numbers) 'line-number 'linum)
+                  solaire-default-face))))
   "Alternative face for `line-number' (native line numbers in Emacs 26+) and
 `linum'."
   :group 'solaire-mode)
@@ -202,14 +203,22 @@ non-nil), `solaire-mode--swap-bg-faces-maybe' is used."
 
 (defun solaire-mode--swap-bg-faces-p ()
   "Return t if the current buffer is in `solaire-mode-theme-whitelist'."
-  (and solaire-mode--current-theme
-       solaire-mode-auto-swap-bg
-       (not solaire-mode--bg-swapped)
-       (cl-loop for rule in solaire-mode-themes-to-face-swap
-                if (cond ((functionp rule) (funcall rule solaire-mode--current-theme))
-                         ((stringp rule) (string-match-p rule (symbol-name solaire-mode--current-theme)))
-                         ((symbolp rule) (eq solaire-mode--current-theme rule)))
-                return t)))
+  (let ((themes
+         (cl-remove-if-not (lambda (x) (get x 'theme-feature))
+                           custom-enabled-themes)))
+    (and themes
+         solaire-mode-auto-swap-bg
+         (not solaire-mode--bg-swapped)
+         (cl-find-if (lambda (rule)
+                       (cl-find-if
+                        (cond ((functionp rule) rule)
+                              ((stringp rule)
+                               (lambda (theme)
+                                 (string-match-p rule (symbol-name theme))))
+                              ((symbolp rule)
+                               (apply-partially #'eq rule)))
+                        themes))
+                     solaire-mode-themes-to-face-swap))))
 
 (defun solaire-mode--swap-faces (face1 face2 &optional prop)
   (let* ((prop (or prop :background))
