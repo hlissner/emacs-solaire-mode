@@ -9,7 +9,7 @@
 ;; Version: 1.1.4
 ;; Keywords: dim bright window buffer faces
 ;; Homepage: https://github.com/hlissner/emacs-solaire-mode
-;; Package-Requires: ((emacs "24.4") (cl-lib "0.5"))
+;; Package-Requires: ((emacs "25.1") (cl-lib "0.5"))
 ;;
 ;; This file is not part of GNU Emacs.
 ;;
@@ -27,22 +27,11 @@
 ;; M-x package-install RET solaire-mode
 ;;
 ;;   (require 'solaire-mode)
+;;   (solaire-global-mode +1)
 ;;
-;; Brighten buffers that represent real files:
-;;
-;;   (add-hook 'change-major-mode-hook #'turn-on-solaire-mode)
-;;
-;; If you use auto-revert-mode:
-;;
-;;   (add-hook 'after-revert-hook #'turn-on-solaire-mode)
-;;
-;; And to unconditionally brighten certain buffers:
+;; And to unconditionally darken certain buffers:
 ;;
 ;;   (add-hook 'ediff-prepare-buffer-hook #'solaire-mode)
-;;
-;; You can do similar with the minibuffer when it is active:
-;;
-;;   (add-hook 'minibuffer-setup-hook #'solaire-mode-in-minibuffer)
 ;;
 ;;; Code:
 
@@ -177,7 +166,7 @@ line number faces will be remapped to `solaire-line-number-face'."
   :group 'solaire-mode
   :type '(list face))
 
-(defcustom solaire-mode-themes-to-face-swap '("^doom-")
+(defcustom solaire-mode-themes-to-face-swap '()
   "A list of rules that determine if the bg faces should be swapped for the
 current theme.
 
@@ -195,7 +184,6 @@ non-nil), `solaire-mode--swap-bg-faces-maybe' is used."
 ;;; Helpers
 
 (defvar solaire-mode--bg-swapped nil)
-(defvar solaire-mode--current-theme nil)
 
 (defun solaire-mode--real-buffer-p ()
   "Return t if the BUF is a file-visiting buffer."
@@ -244,15 +232,8 @@ This is necessary for themes in the doom-themes package."
       (put swap-theme 'theme-settings nil)
       (solaire-mode--swap-faces 'default 'solaire-default-face)
       (solaire-mode--swap-faces 'hl-line 'solaire-hl-line-face)
-      (let ((default-bg (face-background 'default))
-            (theme solaire-mode--current-theme))
-        (with-eval-after-load 'ansi-color
-          (when (eq theme solaire-mode--current-theme)
-            (when (stringp default-bg)
-              (setf (aref ansi-color-names-vector 0) default-bg))))
-        (enable-theme swap-theme)
-        (setq solaire-mode--bg-swapped t)))))
-
+      (enable-theme swap-theme)
+      (setq solaire-mode--bg-swapped t))))
 
 (defvar-local solaire-mode--remap-cookies nil)
 ;;;###autoload
@@ -261,48 +242,29 @@ This is necessary for themes in the doom-themes package."
 `solaire-mode-remap-alist') to their solaire-mode variants."
   :lighter "" ; should be obvious it's on
   :init-value nil
-  (if (not (face-background 'solaire-default-face))
+  (if (null (face-background 'solaire-default-face))
       (setq solaire-mode nil)
     (solaire-mode--swap-bg-faces-maybe)
-    (unless solaire-mode-remap-fringe
-      (solaire-mode-reset-fringe-face solaire-mode))
     (mapc #'face-remap-remove-relative solaire-mode--remap-cookies)
     (when solaire-mode
-      (and (setq solaire-mode--remap-cookies
-                 (cl-loop for (map . pred) in (copy-sequence solaire-mode-remap-alist)
-                          if (eval pred)
-                          collect (apply #'face-remap-add-relative map)))
-           ;; Update the fringe, in case it was remapped. We don't cycle
-           ;; `fringe-mode' because it affects all frames, which is overkill.
-           (when (and (bound-and-true-p fringe-mode)
-                      (display-graphic-p)
-                      solaire-mode-remap-fringe)
-             (modify-frame-parameters
-              nil (list (cons 'left-fringe
-                              (if (consp fringe-mode)
-                                  (car fringe-mode)
-                                fringe-mode))
-                        (cons 'right-fringe
-                              (if (consp fringe-mode)
-                                  (cdr fringe-mode)
-                                fringe-mode)))))))))
-
-(defun solaire-mode-reset-fringe-face (arg)
-  "Toggle the `fringe's new background.
-
-This is only necessary for Emacs 26 and below. Emacs 27 and above support
-remapping the fringe buffer-locally.
-
-If ARG is non-nil, match `solaire-fringe-face's background, otherwise
-`default's."
-  (set-face-background
-   'fringe
-   (if (or (null arg) (eq arg -1))
-       (unless (cl-loop for buf in (buffer-list)
-                        if (buffer-local-value 'solaire-mode buf)
-                        return t)
-         (face-background 'default))
-     (face-background 'solaire-fringe-face nil t))))
+      (setq solaire-mode--remap-cookies
+            (cl-loop for (map . pred) in (copy-sequence solaire-mode-remap-alist)
+                     if (eval pred)
+                     collect (apply #'face-remap-add-relative map)))
+      ;; Update the fringe, in case it was remapped. We don't cycle
+      ;; `fringe-mode' because it affects all frames, which is overkill.
+      (when (and (bound-and-true-p fringe-mode)
+                 (display-graphic-p)
+                 solaire-mode-remap-fringe)
+        (modify-frame-parameters
+         nil (list (cons 'left-fringe
+                         (if (consp fringe-mode)
+                             (car fringe-mode)
+                           fringe-mode))
+                   (cons 'right-fringe
+                         (if (consp fringe-mode)
+                             (cdr fringe-mode)
+                           fringe-mode))))))))
 
 ;;;###autoload
 (define-globalized-minor-mode solaire-global-mode solaire-mode turn-on-solaire-mode)
@@ -314,10 +276,10 @@ If ARG is non-nil, match `solaire-fringe-face's background, otherwise
 Does nothing if the current buffer doesn't satisfy the function in
 `solaire-mode-real-buffer-fn'."
   (interactive)
-  (when (and (not solaire-mode)
-             (not (minibufferp))
-             (funcall solaire-mode-real-buffer-fn))
-    (solaire-mode +1)))
+  (and (not solaire-mode)
+       (or (minibufferp)
+           (not (funcall solaire-mode-real-buffer-fn)))
+       (solaire-mode +1)))
 
 ;;;###autoload
 (defun turn-off-solaire-mode ()
@@ -353,87 +315,139 @@ See `solaire-mode-reset' for details."
     (solaire-mode -1)
     (solaire-mode +1)))
 
-;; Reset solaire-mode so its remappings assimilate the remappings done by
-;; `mixed-pitch-mode' and `variable-pitch-mode'.
-(add-hook 'mixed-pitch-mode-hook #'solaire-mode-reset-buffer)
-(add-hook 'buffer-face-mode-hook #'solaire-mode-reset-buffer)
+(defun solaire-mode-swap-bg-faces-maybe-a (theme &rest _)
+  (and
+   ;; Make sure THEME is a real theme (not a psuedo theme like `use-package' or
+   ;; `solaire-swap-bg-theme').
+   (get theme 'theme-feature)
+   ;; Avoid `cl-lib' here, since we can't assume cl-lib will be available when
+   ;; the autoloads file is read.
+   (catch 'return
+     ;; If THEME was successfully activated by `load-theme', it should be the
+     ;; first real theme in `custom-enabled-themes'.
+     (dolist (th custom-enabled-themes)
+       (when (get th 'theme-feature)
+         (throw 'return (eq th theme)))))
+   ;; Then let 'er rip!
+   (solaire-mode--swap-bg-faces-maybe)))
+(advice-add #'load-theme :after #'solaire-mode-swap-bg-faces-maybe-a)
 
-;;;###autoload
-(advice-add #'load-theme :before
-            (lambda (theme &optional _ no-enable)
-              (unless no-enable
-                (setq solaire-mode--current-theme theme))))
-
-;;;###autoload
-(advice-add #'load-theme :after
-            (lambda (theme &rest _)
-              ;; `load-theme' doesn't always enable THEME
-              (when (memq theme custom-enabled-themes)
-                (setq solaire-mode--bg-swapped nil)
-                ;; If solaire was already loaded and you've changed the theme
-                ;; post-startup, solaire-mode wouldn't reset its swapped bg
-                ;; faces. This prevents that:
-                (when (featurep 'solaire-mode)
-                  (solaire-mode--swap-bg-faces-maybe)))))
-
-(add-hook 'solaire-global-mode-hook #'solaire-mode--swap-bg-faces-maybe)
+(defun solaire-mode-setup-minibuffer ()
+  (dolist (buf '(" *Minibuf-0*" " *Minibuf-1*"
+                 " *Echo Area 0*" " *Echo Area 1*"))
+    (with-current-buffer (get-buffer-create buf)
+      (if solaire-global-mode
+          (when (= (buffer-size) 0)
+            (insert " "))
+        (erase-buffer))
+      (solaire-mode (if solaire-global-mode +1 -1)))))
+(add-hook 'solaire-global-mode-hook #'solaire-mode-setup-minibuffer)
 
 
 ;;
 ;;; Compatibility
 
-(defun solaire-mode--org-bg ()
-  (if (memq 'native org-highlight-latex-and-related)
-      (face-background 'org-block nil t)
-    (face-background 'solaire-default-face nil t)))
+(defun solaire-mode-fix-term-mode ()
+  "Replace `term' face with `solaire-default-face' in `ansi-term-color-vector'.
 
-(defun solaire-mode--org-latex-bg (orig-fn &rest args)
-  "Fix latex previews finding the wrong background color when solaire is on.
+Meant to fix mismatched background on text in term buffers (should be used on
+`solaire-mode-hook')."
+  (when (and  (derived-mode-p 'term-mode))
+    (if (not solaire-mode)
+        (kill-local-variable 'ansi-term-color-vector)
+      (make-local-variable 'ansi-term-color-vector)
+      (setf (elt ansi-term-color-vector 0) 'solaire-default-face))))
+(add-hook 'solaire-mode-hook #'solaire-mode-fix-term-mode)
 
-Only kicks in if :background is set to `default' in `org-format-latex-options'."
-  (let ((org-format-latex-options
-         (org-combine-plists
-          org-format-latex-options
-          (when solaire-mode
-            (append (if (eq (plist-get org-format-latex-options :foreground) 'default)
-                        `(:foreground ,(face-foreground 'solaire-default-face nil t)))
-                    (if (eq (plist-get org-format-latex-options :background) 'default)
-                        `(:background ,(solaire-mode--org-bg))))))))
-    (apply orig-fn args)))
-(advice-add #'org-format-latex :around #'solaire-mode--org-latex-bg)
-(advice-add #'org-create-formula-image :around #'solaire-mode--org-latex-bg)
+(when (< emacs-major-version 27)
+  ;; HACK The fringe cannot have a buffer-local remapping on Emacs <= 26, so we
+  ;;      jump through hoops to reset it (globally) whenever it is likely that
+  ;;      the fringe will have lost its background color.
+  (advice-add #'load-theme :after #'solaire-mode-reset)
 
-(defun solaire-mode--org-put-bg-for-preview-overlay (beg end _image &optional _imagetype)
-  "Adds a `:background' to the preview overlay.
+  ;; Fringe can become unstyled when deleting or refocusing frames
+  (add-hook 'focus-in-hook #'solaire-mode-reset)
 
-Otherwise, Emacs uses the non-solaire-remapped `default' face as their
-background, which stands out as unnatural."
-  (let ((ov (cl-find-if (lambda (o) (overlay-get o 'org-overlay-type))
-                        (overlays-in beg end))))
-    (overlay-put
-     ov 'display
-     (append (overlay-get ov 'display)
-             (if solaire-mode (list :background (solaire-mode--org-bg)))))))
-(advice-add #'org--make-preview-overlay :after #'solaire-mode--org-put-bg-for-preview-overlay)
+  ;; A global fringe color means the minibuffer (with its fringes) will always
+  ;; stand out, so we remove them (in which-key popups too).
+  (defun solaire-mode-disable-fringes-in-minibuffer-h (&rest _)
+    (set-window-fringes (minibuffer-window) 0 0 nil))
+  (add-hook 'solaire-mode-hook #'solaire-mode-disable-fringes-in-minibuffer-h)
+  (add-hook 'minibuffer-setup-hook #'solaire-mode-disable-fringes-in-minibuffer-h)
+  (add-hook 'window-configuration-change-hook #'solaire-mode-disable-fringes-in-minibuffer-h)
+
+  (with-eval-after-load 'which-key
+    (defun solaire-mode--no-fringes-in-which-key-buffer-a (&rest _)
+      (solaire-mode-disable-fringes-in-minibuffer-h)
+      (set-window-fringes (get-buffer-window which-key--buffer) 0 0 nil))
+    (advice-add 'which-key--show-buffer-side-window
+                :after #'solaire-mode--no-fringes-in-which-key-buffer-a))
+
+  (defun solaire-mode-fix-fringe ()
+    "Toggle the `fringe's new background.
+If ARG is non-nil, match `solaire-fringe-face's background, otherwise
+`default's."
+    (when solaire-mode-remap-fringe
+      (set-face-background
+       'fringe
+       (if solaire-mode
+           (face-background 'default)
+         (unless (cl-find-if (apply-partially #'buffer-local-value 'solaire-mode)
+                             (buffer-list))
+           (face-background 'solaire-fringe-face nil t))))))
+  (add-hook 'solaire-mode-hook #'solaire-mode-fix-fringe)
 
 
-;;; Deprecated
+  ;; HACK On Emacs <=26, when point is on the last (or second to last) line and
+  ;;      solaire-mode is remapping the hl-line face, hl-line's highlight bleeds
+  ;;      into the rest of the window after eob. On Emacs 27 this no longer
+  ;;      happens. This tries to fix it for 26 users, but it imposes another
+  ;;      problem: the 2nd-to-last line will only be highlighted up to the
+  ;;      (n-1)th character, but I think that is the lesser evil.
+  (defun solaire-mode--hl-line-range-fn ()
+    (if solaire-mode
+        (let ((bol (line-beginning-position))
+              (eol (line-end-position))
+              (eob (point-max)))
+          (cond ((= bol eob)
+                 nil)
+                ((= (1+ eol) eob)
+                 (cons bol (1- eob)))
+                ((or (= eol eob) (eobp))
+                 (cons bol eol))
+                ((cons bol (line-beginning-position 2)))))
+      (cons (line-beginning-position)
+            (line-beginning-position 2))))
+  (setq hl-line-range-function #'solaire-mode--hl-line-range-fn))
 
-;;;###autoload
-(defun solaire-mode-swap-bg ()
-  "Does nothing. Set `solaire-mode-auto-swap-bg' instead."
-  (declare (obsolete solaire-mode-auto-swap-bg "1.1.4"))
-  (solaire-mode--swap-bg-faces-maybe))
+(defun solaire-mode-create-image-with-correct-bg-a (image)
+  (when (bound-and-true-p solaire-mode)
+    (plist-put (cdr image) :background (face-background 'solaire-default-face nil t)))
+  image)
+(advice-add #'create-image :filter-return #'solaire-mode-create-image-with-correct-bg-a)
+
+(with-eval-after-load 'persp-mode
+  (defun solaire-mode-restore-persp-mode-buffers (&rest _)
+    "Restore `solaire-mode' in buffers when `persp-mode' loads a session."
+    (dolist (buf (persp-buffer-list))
+      (with-current-buffer buf
+        (turn-on-solaire-mode))))
+  (advice-add #'persp-load-state-from-file :after #'solaire-mode-restore-persp-mode-buffers))
 
 
-;;; Support for other packages
 
-;;;###autoload
-(defun solaire-mode-restore-persp-mode-buffers (&rest _)
-  "Restore `solaire-mode' in buffers when `persp-mode' loads a session."
-  (dolist (buf (persp-buffer-list))
-    (with-current-buffer buf
-      (turn-on-solaire-mode))))
+;;
+;;; Side effects
+
+(add-hook 'after-revert-hook #'turn-on-solaire-mode)
+
+;; Reset solaire-mode so its remappings assimilate the remappings done by
+;; `mixed-pitch-mode' and `variable-pitch-mode'.
+(add-hook 'mixed-pitch-mode-hook #'solaire-mode-reset-buffer)
+(add-hook 'buffer-face-mode-hook #'solaire-mode-reset-buffer)
+
+;; Make sure solaire-mode has enough chances to swap the bg faces.
+(add-hook 'solaire-global-mode-hook #'solaire-mode--swap-bg-faces-maybe)
 
 (provide 'solaire-mode)
 ;;; solaire-mode.el ends here

@@ -1,3 +1,4 @@
+[![Made with Doom Emacs](https://img.shields.io/badge/Made_with-Doom_Emacs-blueviolet.svg?style=flat-square&logo=GNU%20Emacs&logoColor=white)](https://github.com/hlissner/doom-emacs)
 ![Release tag](https://img.shields.io/github/tag/hlissner/emacs-solaire-mode.svg?label=release&style=flat-square)
 [![MIT](https://img.shields.io/badge/license-MIT-green.svg)](./LICENSE)
 [![MELPA](http://melpa.org/packages/solaire-mode-badge.svg)](http://melpa.org/#/solaire-mode)
@@ -38,13 +39,10 @@ configuration is needed.
 
 ## Configuration
 
-`solaire-mode` (or `solaire-global-mode`) must be activated before your theme is
-loaded:
+Activate `solaire-global-mode` _before_ you load your theme.
 
 ```emacs-lisp
 (solaire-global-mode +1)
-
-(load-theme 'my-theme t)
 ```
 
 Here are some example `use-package` configs for `solaire-mode`:
@@ -52,29 +50,12 @@ Here are some example `use-package` configs for `solaire-mode`:
 ```emacs-lisp
 ;; A simple config:
 (use-package solaire-mode
-  :hook (after-init . solaire-global-mode))
-
-
-;; A more complex, more lazy-loaded config
-(use-package solaire-mode
-  ;; Ensure solaire-mode is running in all solaire-mode buffers
-  :hook (change-major-mode . turn-on-solaire-mode)
-  ;; ...if you use auto-revert-mode, this prevents solaire-mode from turning
-  ;; itself off every time Emacs reverts the file
-  :hook (after-revert . turn-on-solaire-mode)
-  ;; To enable solaire-mode unconditionally for certain modes:
-  :hook (ediff-prepare-buffer . solaire-mode)
-  ;; Highlight the minibuffer when it is activated:
-  :hook (minibuffer-setup . solaire-mode-in-minibuffer)
-  :config
-  ;; The bright and dark background colors are automatically swapped the first 
-  ;; time solaire-mode is activated. Namely, the backgrounds of the `default` and
-  ;; `solaire-default-face` faces are swapped. This is done because the colors 
-  ;; are usually the wrong way around. If you don't want this, you can disable it:
-  (setq solaire-mode-auto-swap-bg nil)
-
-  (solaire-global-mode +1))
+  :config (solaire-global-mode +1))
 ```
+
+### Doom Emacs
+
+Doom users only need to enable its `:ui doom` module. It installs and configures solaire-mode for you; no additional work needed!
 
 
 ## Configuration
@@ -118,17 +99,9 @@ Here are some example `use-package` configs for `solaire-mode`:
   + [modus-themes]
 
 ## Jolly cooperation with other plugins
-+ Latex previews in org-mode may have a mismatched background color. You can fix
-  this by setting the `:background` property in `org-format-latex-options` to
-  `'default`:
-  
-  ```elisp
-  (with-eval-after-load 'org
-    (plist-put org-format-latex-options :background 'default))
-  ```
 + By default, `solaire-mode` remaps the mode-line faces. This interferes with
-  certain mode-line packages like telephone-line or powerline. You can undo this
-  with:
+  certain mode-line packages like telephone-line or powerline, but works fine
+  for doom-modeline. To disable this behavior use:
 
   ```emacs-lisp
   (setq solaire-mode-remap-modeline nil)
