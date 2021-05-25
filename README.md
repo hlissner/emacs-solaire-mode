@@ -94,9 +94,13 @@ Doom users only need to enable its `:ui doom` module. It installs and configures
   The only (known) themes to support solaire-mode are:
 
   + [doom-themes]
-  + [spacemacs-theme]
-  + [wilmersdorf-theme]
   + [modus-themes]
+  + [parchment]
+  + [spacemacs-theme]
+  + [vscode-dark-plus-theme]
+  + [wilmersdorf-theme]
+  
+  If you know of more, feel free to PR them.
 
 ## Jolly cooperation with other plugins
 + By default, `solaire-mode` remaps the mode-line faces. This interferes with
@@ -117,6 +121,8 @@ Doom users only need to enable its `:ui doom` module. It installs and configures
 
 
 [doom-themes]: https://github.com/hlissner/emacs-doom-themes
-[spacemacs-theme]: https://github.com/nashamri/spacemacs-theme
-[wilmersdorf-theme]: https://github.com/ianpan870102/wilmersdorf-emacs-theme
 [modus-themes]: https://gitlab.com/protesilaos/modus-themes
+[parchment]: https://github.com/ajgrf/parchment
+[spacemacs-theme]: https://github.com/nashamri/spacemacs-theme
+[vscode-dark-plus-theme]: https://github.com/ianpan870102/vscode-dark-plus-emacs-theme
+[wilmersdorf-theme]: https://github.com/ianpan870102/wilmersdorf-emacs-theme
