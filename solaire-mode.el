@@ -316,6 +316,7 @@ See `solaire-mode-reset' for details."
     (solaire-mode +1)))
 
 (defun solaire-mode-swap-bg-faces-maybe-a (theme &rest _)
+  "Swap bg colors of `default' & `solaire-default-face' when THEME is loaded."
   (and
    ;; Make sure THEME is a real theme (not a psuedo theme like `use-package' or
    ;; `solaire-swap-bg-theme').
@@ -333,6 +334,14 @@ See `solaire-mode-reset' for details."
 (advice-add #'load-theme :after #'solaire-mode-swap-bg-faces-maybe-a)
 
 (defun solaire-mode-setup-minibuffer ()
+  "Creates up minibuffer/echo area buffers and inserts whitespace in them.
+
+Emacs will always display one of *Minibuf-X* or *Echo Area X* (where X is 0 or
+1) in the minibuffer area. If these buffers don't exist OR they exist and are
+empty, they will be transparent, showing the background color of `default', but
+`solaire-mode' wants it to display `solaire-default-face' instead.
+
+To do this, we create these buffers early and insert whitespace into them."
   (dolist (buf '(" *Minibuf-0*" " *Minibuf-1*"
                  " *Echo Area 0*" " *Echo Area 1*"))
     (with-current-buffer (get-buffer-create buf)
