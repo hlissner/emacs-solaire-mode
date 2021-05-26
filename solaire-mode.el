@@ -349,6 +349,8 @@ To do this, we create these buffers early and insert whitespace into them."
           (when (= (buffer-size) 0)
             (insert " "))
         (erase-buffer))
+      ;; Don't allow users to kill these buffers, as it destroys the illusion
+      (add-hook 'kill-buffer-query-functions #'ignore nil 'local)
       (solaire-mode (if solaire-global-mode +1 -1)))))
 (add-hook 'solaire-global-mode-hook #'solaire-mode-setup-minibuffer)
 
