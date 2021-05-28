@@ -37,6 +37,8 @@
 
 (require 'cl-lib)
 
+(defvar evil-buffer-regexps)
+
 (defgroup solaire-mode nil
   "Options for solaire-mode."
   :group 'faces)
@@ -345,6 +347,10 @@ To do this, we create these buffers early and insert whitespace into them."
   (dolist (buf '(" *Minibuf-0*" " *Minibuf-1*"
                  " *Echo Area 0*" " *Echo Area 1*"))
     (with-current-buffer (get-buffer-create buf)
+      ;; HACK Fix #41: evil initializes itself in these buffers, whether or not
+      ;;      `evil-want-minibuffer' (or `evil-collection-setup-minibuffer') is
+      ;;      non-nil, which is unwanted.
+      (setq-local evil-buffer-regexps '((".")))
       (if solaire-global-mode
           (when (= (buffer-size) 0)
             (insert " "))
