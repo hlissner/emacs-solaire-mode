@@ -93,6 +93,7 @@ configures solaire-mode for you. No additional work needed!
   + [spacemacs-theme]
   + [vscode-dark-plus-theme]
   + [wilmersdorf-theme]
+  + [nano-theme]
   
   If you know of more, feel free to PR them.
 
@@ -120,3 +121,4 @@ configures solaire-mode for you. No additional work needed!
 [spacemacs-theme]: https://github.com/nashamri/spacemacs-theme
 [vscode-dark-plus-theme]: https://github.com/ianpan870102/vscode-dark-plus-emacs-theme
 [wilmersdorf-theme]: https://github.com/ianpan870102/wilmersdorf-emacs-theme
+[nano-theme]: https://github.com/404cn/nano-theme.el
