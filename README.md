@@ -13,7 +13,8 @@ If only certain buffers could be so grossly incandescent.
 
 `solaire-mode` is an aesthetic plugin that helps visually distinguish
 file-visiting windows from other types of windows (like popups or sidebars) by
-giving them a slightly different -- often brighter -- background.
+making non-file-visiting buffers a slightly different -- often darker --
+background.
 
 Praise the sun.
 
@@ -21,7 +22,7 @@ Praise the sun.
 + Uses `face-remapping-alist`, which other plugins may overwrite.
 + Tested mainly on Emacs 25.1+
 + This was once a part of [doom-themes] as `doom-buffer-mode`
-+ Try jumping.
++ [Try jumping.](https://www.youtube.com/watch?v=-ZGlaAxB7nI)
 
 ## Screenshot
 
@@ -39,23 +40,16 @@ configuration is needed.
 
 ## Configuration
 
-Activate `solaire-global-mode` _before_ you load your theme.
+Simply activate `solaire-global-mode`:
 
 ```emacs-lisp
 (solaire-global-mode +1)
 ```
 
-Here are some example `use-package` configs for `solaire-mode`:
-
-```emacs-lisp
-;; A simple config:
-(use-package solaire-mode
-  :config (solaire-global-mode +1))
-```
-
 ### Doom Emacs
 
-Doom users only need to enable its `:ui doom` module. It installs and configures solaire-mode for you; no additional work needed!
+Doom users only need to enable its `:ui doom` module, which installs and
+configures solaire-mode for you. No additional work needed!
 
 
 ## Configuration
