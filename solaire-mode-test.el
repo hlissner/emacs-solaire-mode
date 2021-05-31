@@ -15,7 +15,7 @@
 Activates a psuedo theme with FACE-SPECS, runs BODY, then cleans up any
 side-effects of enabling `solaire-mode'."
   (declare (indent 2))
-  (let ((theme (gensym "solaire-mode-theme-")))
+  (let ((theme (make-symbol "solaire-mode-theme")))
     `(ert-deftest ,name ()
        (with-temp-buffer
          (deftheme ,theme)
