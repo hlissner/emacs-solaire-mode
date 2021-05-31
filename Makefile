@@ -8,7 +8,7 @@ all: autoloads compile test
 
 autoloads:
 	@emacs -batch \
-		--eval '(setq generated-autoload-file "solaire-mode-autoloads.el")' \
+        --eval '(setq generated-autoload-file (expand-file-name "solaire-mode-autoloads.el"))' \
 		-f batch-update-autoloads .
 
 compile:

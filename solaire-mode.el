@@ -293,6 +293,7 @@ Meant to be used as a `load-theme' advice."
           (solaire-global-mode -1)))))
   (advice-add #'load-theme :after #'solaire-mode--prepare-for-theme-a))
 
+(defvar evil-buffer-regexps)
 (defun solaire-mode-fix-minibuffer (&optional unset)
   "Create minibuffer/echo area buffers and insert whitespace into them.
 
