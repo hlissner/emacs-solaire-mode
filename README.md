@@ -1,7 +1,7 @@
 [![Made with Doom Emacs](https://img.shields.io/badge/Made_with-Doom_Emacs-blueviolet.svg?style=flat-square&logo=GNU%20Emacs&logoColor=white)](https://github.com/hlissner/doom-emacs)
 ![Release tag](https://img.shields.io/github/tag/hlissner/emacs-solaire-mode.svg?label=release&style=flat-square)
 [![MELPA](http://melpa.org/packages/solaire-mode-badge.svg)](http://melpa.org/#/solaire-mode)
-![Build status: develop](https://img.shields.io/github/workflow/status/hlissner/emacs-solaire-mode/CI/develop?style=flat-square)
+![Build status](https://img.shields.io/github/workflow/status/hlissner/emacs-solaire-mode/CI/master?style=flat-square)
 
 # Solaire mode
 If only certain buffers could be so grossly incandescent.
