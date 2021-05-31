@@ -21,6 +21,4 @@ jobs:
       - uses: purcell/setup-emacs@master
         with:
           version: ${{ matrix.emacs_version }}
-      - name: Check emacs version
-        run: emacs --version
       - run: make
