@@ -127,6 +127,7 @@ For full support, themes can customize the following faces:
 The only (known) themes to support solaire-mode are:
 
 + [doom-themes]
++ [nano-theme]
 + [modus-themes]
 + [parchment]
 + [spacemacs-theme]
@@ -138,6 +139,7 @@ If you know of more, feel free to PR them.
 
 [doom-themes]: https://github.com/hlissner/emacs-doom-themes
 [modus-themes]: https://gitlab.com/protesilaos/modus-themes
+[nano-theme]: https://github.com/404cn/nano-theme.el
 [parchment]: https://github.com/ajgrf/parchment
 [spacemacs-theme]: https://github.com/nashamri/spacemacs-theme
 [vscode-dark-plus-theme]: https://github.com/ianpan870102/vscode-dark-plus-emacs-theme
