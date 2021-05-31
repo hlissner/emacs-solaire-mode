@@ -74,7 +74,7 @@ Simply activate `solaire-global-mode`:
 
   ```elisp
   (dolist (face '(mode-line mode-line-inactive))
-    (assq-delete-all face solaire-mode-remap-modeline))
+    (setf (alist-get face solaire-mode-remap-modeline) nil))
   ```
 + It is up to themes to decide whether unreal buffers (i.e. non-file-visiting)
   are lighter or darker than real buffers. If you don't like their arrangement,

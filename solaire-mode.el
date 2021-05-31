@@ -191,7 +191,8 @@ See `solaire-mode-themes-to-face-swap' for themes where faces will be swapped."
       (custom-declare-theme swap-theme nil)
       (put swap-theme 'theme-settings nil)
       (dolist (faces solaire-mode-swap-alist)
-        (solaire-mode--swap-faces (car faces) (cdr faces)))
+        (when (cdr faces)
+          (solaire-mode--swap-faces (car faces) (cdr faces))))
       (enable-theme swap-theme))
     (setq solaire-mode--swapped-p t)))
 
@@ -215,8 +216,9 @@ current frame."
     (setq solaire-mode--remaps nil)
     (when solaire-mode
       (dolist (remap solaire-mode-remap-alist)
-        (push (face-remap-add-relative (car remap) (cdr remap))
-              solaire-mode--remaps)))))
+        (when (cdr remap)
+          (push (face-remap-add-relative (car remap) (cdr remap))
+                solaire-mode--remaps))))))
 
 ;;;###autoload
 (define-globalized-minor-mode solaire-global-mode solaire-mode turn-on-solaire-mode)
