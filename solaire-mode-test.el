@@ -14,9 +14,11 @@
 
 Activates a psuedo theme with FACE-SPECS, runs BODY, then cleans up any
 side-effects of enabling `solaire-mode'."
-  (declare (indent 2))
-  (let ((theme (make-symbol "solaire-mode-theme")))
+  (declare (indent 2) (doc-string 3))
+  (let ((theme (make-symbol "solaire-mode-theme"))
+        (docstring (if (stringp (car body)) (pop body))))
     `(ert-deftest ,name ()
+       ,docstring
        (with-temp-buffer
          (deftheme ,theme)
          (apply #'custom-theme-set-faces ',theme (list ,@face-specs))
@@ -51,15 +53,23 @@ side-effects of enabling `solaire-mode'."
   (solaire-mode +1)
   (should-not solaire-mode))
 
+(deftest real-buffer-predicate ()
+  (with-current-buffer (find-file-noselect "solaire-mode.el")
+    (should (solaire-mode-real-buffer-p)))
+  (with-current-buffer (dired-noselect ".")
+    (should-not (solaire-mode-real-buffer-p))))
+
 (deftest activates-in-unreal-buffers
     ('(default ((t (:background "#000000"))))
      '(solaire-default-face ((t (:background "#222222")))))
-  (let ((solaire-mode-real-buffer-fn (lambda () t)))
-    (turn-on-solaire-mode))
-  (should-not solaire-mode)
-  (let ((solaire-mode-real-buffer-fn (lambda () nil)))
-    (turn-on-solaire-mode))
-  (should solaire-mode))
+  (with-temp-buffer
+    (let ((solaire-mode-real-buffer-fn (lambda () t)))
+      (turn-on-solaire-mode))
+    (should-not solaire-mode))
+  (with-temp-buffer
+    (let ((solaire-mode-real-buffer-fn (lambda () nil)))
+      (turn-on-solaire-mode))
+    (should solaire-mode)))
 
 (deftest remaps-faces-buffer-locally
     ('(default                         ((t (:background "#000000"))))
