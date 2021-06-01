@@ -72,6 +72,10 @@ Used to camoflauge the leading asterixes in `org-mode' when
 `org-hide-leading-stars' is non-nil."
   :group 'solaire-mode)
 
+(defface solaire-region-face '((t :inherit region))
+  "Alternative face for `region' (the active selection)."
+  :group 'solaire-mode)
+
 (defface solaire-mode-line-face '((t :inherit mode-line))
   "Alternative face for the `mode-line' face."
   :group 'solaire-mode)
@@ -99,6 +103,7 @@ Should accept one argument: the buffer and return truthy for buffers where
 (defcustom solaire-mode-remap-alist
   `((default                    . solaire-default-face)
     (hl-line                    . solaire-hl-line-face)
+    (region                     . solaire-region-face)
     (org-hide                   . solaire-org-hide-face)
     (org-indent                 . solaire-org-hide-face)
     (linum                      . solaire-line-number-face)
