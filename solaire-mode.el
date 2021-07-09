@@ -181,25 +181,27 @@ If FEATURE is t, swap FACES immediately."
 
 See `solaire-mode-swap-alist' for list of faces that are swapped.
 See `solaire-mode-themes-to-face-swap' for themes where faces will be swapped."
-  (when (and solaire-mode--supported-p
-             (null solaire-mode--swapped-p)
-             (cl-find-if
-              (lambda (rule)
-                (cond ((functionp rule)
-                       (funcall rule solaire-mode--theme))
-                      ((stringp rule)
-                       (string-match-p rule (symbol-name solaire-mode--theme)))
-                      ((symbolp rule)
-                       (eq solaire-mode--theme rule))))
-              solaire-mode-themes-to-face-swap))
-    (let ((swap-theme 'solaire-swap-bg-theme))
-      (custom-declare-theme swap-theme nil)
-      (put swap-theme 'theme-settings nil)
-      (dolist (faces solaire-mode-swap-alist)
-        (when (cdr faces)
-          (solaire-mode--swap-faces (car faces) (cdr faces))))
-      (enable-theme swap-theme))
-    (setq solaire-mode--swapped-p t)))
+  (let ((swap-theme 'solaire-swapped-faces-theme))
+    (custom-declare-theme swap-theme nil)
+    (if solaire-global-mode
+        (when (and solaire-mode--supported-p
+                   (null solaire-mode--swapped-p)
+                   (cl-find-if
+                    (lambda (rule)
+                      (cond ((functionp rule)
+                             (funcall rule solaire-mode--theme))
+                            ((stringp rule)
+                             (string-match-p rule (symbol-name solaire-mode--theme)))
+                            ((symbolp rule)
+                             (eq solaire-mode--theme rule))))
+                    solaire-mode-themes-to-face-swap))
+          (put swap-theme 'theme-settings nil)
+          (dolist (faces solaire-mode-swap-alist)
+            (when (cdr faces)
+              (solaire-mode--swap-faces (car faces) (cdr faces))))
+          (enable-theme swap-theme)
+          (setq solaire-mode--swapped-p t))
+      (disable-theme swap-theme))))
 
 
 ;;
