@@ -317,8 +317,7 @@ To do this, we create these buffers early and insert whitespace into them."
     (with-current-buffer (get-buffer-create buf)
       (if (or unset (not solaire-global-mode))
           (if (minibufferp)
-              (with-current-buffer buf
-                (solaire-mode -1))
+              (solaire-mode -1)
             (let (kill-buffer-query-functions)
               (kill-buffer buf)))
         ;; HACK Fix #41: evil initializes itself in these buffers, whether or not
