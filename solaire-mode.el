@@ -316,8 +316,11 @@ To do this, we create these buffers early and insert whitespace into them."
                  " *Echo Area 0*" " *Echo Area 1*"))
     (with-current-buffer (get-buffer-create buf)
       (if (or unset (not solaire-global-mode))
-          (let (kill-buffer-query-functions)
-            (kill-buffer buf))
+          (if (minibufferp)
+              (with-current-buffer buf
+                (solaire-mode -1))
+            (let (kill-buffer-query-functions)
+              (kill-buffer buf)))
         ;; HACK Fix #41: evil initializes itself in these buffers, whether or not
         ;;      `evil-want-minibuffer' (or `evil-collection-setup-minibuffer') is
         ;;      non-nil, which is unwanted.
@@ -326,7 +329,7 @@ To do this, we create these buffers early and insert whitespace into them."
           (insert " "))
         ;; Don't allow users to kill these buffers, as it destroys the illusion
         (add-hook 'kill-buffer-query-functions #'ignore nil 'local)
-        (solaire-mode (if solaire-global-mode +1 -1))))))
+        (solaire-mode +1)))))
 
 ;; Make sure the minibuffer always has solaire-mode active in it
 (add-hook 'solaire-global-mode-hook #'solaire-mode-fix-minibuffer)
