@@ -2,7 +2,6 @@
 ;;; Commentary:
 ;;; Code:
 
-(require 'solaire-mode-autoloads nil t)
 (require 'solaire-mode)
 
 
@@ -141,6 +140,3 @@ side-effects of enabling `solaire-mode'."
                        (alist-get (cdr swap) old-colors))))
       ;; But don't swap the same theme more than once
       (should-not (solaire-mode-swap-faces-maybe)))))
-
-(provide 'solaire-mode-test)
-;;; solaire-mode-test.el ends here
