@@ -207,7 +207,7 @@ See `solaire-mode-themes-to-face-swap' for themes where faces will be swapped."
 
 ;;;###autoload
 (define-minor-mode solaire-mode
-  "Make current buffer a different color to make others grossly incandescent.
+  "Make current buffer a different color so others can be grossly incandescent.
 
 Remaps faces in `solaire-mode-remap-alist', then runs `solaire-mode-hook', where
 additional mode-specific fixes may live. Lastly, adjusts the fringes for the
@@ -252,8 +252,8 @@ Does nothing if the current buffer doesn't satisfy the function in
   "Reset `solaire-mode' in all buffers where it is enabled.
 
 Use this in case solaire-mode has caused some sort of problem, e.g. after
-changing themes.  are more prelevant in Emacs 25 and 26, but far less so
-in 27+; particularly where the fringe is concerned."
+changing themes.  are more prelevant in Emacs 25 and 26, but far less so in 27+;
+particularly where the fringe is concerned."
   (interactive)
   (dolist (buf (buffer-list))
     (with-current-buffer buf
@@ -275,13 +275,14 @@ See `solaire-mode-reset' for details."
 ;;;###autoload
 (progn
   ;; The `progn' assures the whole form is inserted into the package's autoloads
-  ;; verbatim, rather than as `autoload' forms.
+  ;; verbatim, rather than as `autoload' forms, so that this `load-theme' advice
+  ;; is active as soon as possible.
   (defun solaire-mode--prepare-for-theme-a (theme &rest _)
     "Prepare solaire-mode for THEME.
 Meant to be used as a `load-theme' advice."
     (when (and
            ;; Make sure THEME is a real theme (not a psuedo theme like
-           ;; `solaire-swap-bg-theme').
+           ;; `solaire-swapped-faces-theme').
            (get theme 'theme-feature)
            ;; And that it's been successfully enabled.
            (memq theme custom-enabled-themes))
@@ -302,16 +303,15 @@ Meant to be used as a `load-theme' advice."
 
 (defvar evil-buffer-regexps)
 (defun solaire-mode-fix-minibuffer (&optional unset)
-  "Create minibuffer/echo area buffers and insert whitespace into them.
+  "Create minibuffer/echo area buffers to enable `solaire-mode' in them.
 
-If UNSET, kill these buffers instead.
+If UNSET, resets these buffers instead.
 
-Emacs will always display one of *Minibuf-X* or *Echo Area X* (where X is 0 or
+Emacs will always display one of *Minibuf-N* or *Echo Area N* (where X is 0 or
 1) in the minibuffer area. If these buffers don't exist OR they exist and are
-empty, they will be transparent, showing the background color of `default', but
-`solaire-mode' wants it to display `solaire-default-face' instead.
-
-To do this, we create these buffers early and insert whitespace into them."
+empty, they will be transparent, showing the (incorrect) background color of
+`default', but we want it to display `solaire-default-face' instead, so we
+create these buffers early and insert whitespace in them."
   (dolist (buf '(" *Minibuf-0*" " *Minibuf-1*"
                  " *Echo Area 0*" " *Echo Area 1*"))
     (with-current-buffer (get-buffer-create buf)
@@ -320,9 +320,9 @@ To do this, we create these buffers early and insert whitespace into them."
               (solaire-mode -1)
             (let (kill-buffer-query-functions)
               (kill-buffer buf)))
-        ;; HACK Fix #41: evil initializes itself in these buffers, whether or not
-        ;;      `evil-want-minibuffer' (or `evil-collection-setup-minibuffer') is
-        ;;      non-nil, which is unwanted.
+        ;; HACK Fix #41: evil initializes itself in these buffers, whether or
+        ;;      not `evil-want-minibuffer' or `evil-collection-setup-minibuffer'
+        ;;      is non-nil, which is unwanted.
         (setq-local evil-buffer-regexps '((".")))
         (when (= (buffer-size) 0)
           (insert " "))
@@ -330,17 +330,18 @@ To do this, we create these buffers early and insert whitespace into them."
         (add-hook 'kill-buffer-query-functions #'ignore nil 'local)
         (solaire-mode +1)))))
 
-;; Make sure the minibuffer always has solaire-mode active in it
+;; Make sure the minibuffer always has solaire-mode active in it.
 (add-hook 'solaire-global-mode-hook #'solaire-mode-fix-minibuffer)
 
 ;; Give `solaire-global-mode' a change to swap faces as early as possible.
 (add-hook 'solaire-global-mode-hook #'solaire-mode-swap-faces-maybe)
 
 (defun solaire-mode--auto-detect-theme ()
-  "Initialize solaire-mode for the most recently enabled theme.
+  "Initialize solaire-mode for a recently enabled theme.
 
-This is only necessary if the user has loaded the package without its autoloads,
-which is unusual, but may be necessary for testing (e.g. in a sandbox)."
+This is only necessary if `solaire-mode--prepare-for-theme-a' wasn't executed
+when the user loaded their latest theme. E.g. the user loads this package
+without its autoloads. Normally, you shouldn't directly call this."
   (unless solaire-mode--theme
     (let ((theme
            (cl-find-if (lambda (th) (get th 'theme-feature))
@@ -358,16 +359,16 @@ which is unusual, but may be necessary for testing (e.g. in a sandbox)."
 (with-no-warnings  ; Shush, byte-compiler! Trust in Solaire.
   (when (< emacs-major-version 27)
     ;;; Fixes for Emacs <=26 fringes
-    ;; HACK The fringe cannot have a buffer-local remapping on Emacs <= 26, so we
-    ;;      jump through hoops to reset it (globally) whenever it is likely that
-    ;;      the fringe will have lost its background color.
+    ;; HACK The fringe cannot have a buffer-local remapping on Emacs <= 26, so
+    ;;      we jump through hoops to reset it (globally) whenever it is likely
+    ;;      that the fringe has lost its background color.
     (advice-add #'load-theme :after #'solaire-mode-reset)
 
-    ;; HACK Fringe can become unstyled when deleting or refocusing frames
+    ;; HACK The fringe can become unstyled when deleting or refocusing frames.
     (add-hook 'focus-in-hook #'solaire-mode-reset)
 
-    ;; HACK Hide the fringe in the minibuffer or which-key frames, since it serves
-    ;;      no purpose there, and its incorrect color stands out as ugly.
+    ;; HACK Hide the fringe in the minibuffer or which-key frames, since it
+    ;;      serves no purpose there, and its incorrect color stands out as ugly.
     (defun solaire-mode--hide-fringes-in-minibuffer-h (&rest _)
       "Hide the fringe in the minibuffer.
 A global fringe color means the minibuffer (with its fringes) will always stand
@@ -436,8 +437,8 @@ hl-line's overlay to spill out into the rest of the window."
               (line-beginning-position 2))))
     (setq hl-line-range-function #'solaire-mode-hl-line-range-fn))
 
-  ;; which-key and transient create their popups in split windows/frames, in
-  ;; fundamental-mode, which `solaire-global-mode' doesn't reach. This fixes that.
+  ;; which-key and transient create their popups in splits and in
+  ;; fundamental-mode, which `solaire-global-mode' can't reach. This fixes that.
   (defun solaire-mode--enable-if-global ()
     "Activate `solaire-mode' in buffer if `solaire-global-mode' is active."
     (when solaire-global-mode
@@ -480,7 +481,7 @@ Meant to be used as `:after' advice for `mini-modeline--set-buffer-face'."
 
   ;;; term / ansi-term
   (defun solaire-mode--fix-term-mode ()
-    "Replace `term' face with `solaire-default-face' in `ansi-term-color-vector'.
+    "Replace `term' with `solaire-default-face' in `ansi-term-color-vector'.
 Meant to fix mismatched background on text in term buffers (should be used on
 `solaire-mode-hook')."
     (when (derived-mode-p 'term-mode)
@@ -521,7 +522,7 @@ Meant to fix mismatched background on text in term buffers (should be used on
   ;;      This doesn't totally fix the issue, but makes it more tolerable (by
   ;;      using `default's unremapped background).
   (define-advice map-y-or-n-p (:around (orig-fn &rest args) fix-background)
-    "Advice to fix ugly white background in `map-y-or-n-p' due to `solaire-mode'.
+    "Fix ugly white background in `map-y-or-n-p' due to `solaire-mode'.
 ORIG-FN is `map-y-or-n-p' and ARGS are its arguments."
     (unwind-protect
         (progn

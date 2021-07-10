@@ -11,8 +11,11 @@
 (defmacro deftest (name face-specs &rest body)
   "A wrapper around `ert-deftest'.
 
-Activates a psuedo theme with FACE-SPECS, runs BODY, then cleans up any
-side-effects of enabling `solaire-mode'."
+NAME is the name of the test.
+FACE-SPECS are a list of face attributes to create a temporary theme with. This
+theme is enalbed during BODY.
+
+After BODY runs, any side-effects of enabling `solaire-mode' are cleaned up."
   (declare (indent 2) (doc-string 3))
   (let ((theme (make-symbol "solaire-mode-theme"))
         (docstring (if (stringp (car body)) (pop body))))
@@ -140,3 +143,5 @@ side-effects of enabling `solaire-mode'."
                        (alist-get (cdr swap) old-colors))))
       ;; But don't swap the same theme more than once
       (should-not (solaire-mode-swap-faces-maybe)))))
+
+;;; solaire-mode-test.el ends here
