@@ -46,6 +46,7 @@
 ;;
 ;;; Faces
 
+;;;###autoload
 (defface solaire-default-face '((t :inherit default))
   "Alternative version of the `default' face."
   :group 'solaire-mode)
