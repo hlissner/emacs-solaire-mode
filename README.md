@@ -131,6 +131,7 @@ The only (known) themes to support solaire-mode are:
 + [modus-themes]
 + [parchment]
 + [spacemacs-theme]
++ [stimmung-themes]
 + [vscode-dark-plus-theme]
 + [wilmersdorf-theme]
 
@@ -142,5 +143,6 @@ If you know of more, feel free to PR them.
 [nano-theme]: https://github.com/404cn/nano-theme.el
 [parchment]: https://github.com/ajgrf/parchment
 [spacemacs-theme]: https://github.com/nashamri/spacemacs-theme
+[stimmung-themes]: https://github.com/motform/stimmung-themes
 [vscode-dark-plus-theme]: https://github.com/ianpan870102/vscode-dark-plus-emacs-theme
 [wilmersdorf-theme]: https://github.com/ianpan870102/wilmersdorf-emacs-theme
