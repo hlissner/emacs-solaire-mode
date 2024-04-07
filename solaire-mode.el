@@ -525,14 +525,24 @@ Meant to fix mismatched background on text in term buffers (should be used on
   ;;
   ;;      This doesn't totally fix the issue, but makes it more tolerable (by
   ;;      using `default's unremapped background).
-  (define-advice map-y-or-n-p (:around (orig-fn &rest args) fix-background)
+  (define-advice map-y-or-n-p (:around (orig-fn prompter &rest args) fix-background)
     "Fix ugly white background in `map-y-or-n-p' due to `solaire-mode'.
 ORIG-FN is `map-y-or-n-p' and ARGS are its arguments."
-    (unwind-protect
-        (progn
-          (solaire-mode-fix-minibuffer 'unset)
-          (apply orig-fn args))
-      (solaire-mode-fix-minibuffer))))
+    (let ((unset-p nil))
+      (unwind-protect
+          (apply orig-fn
+                 ;; This function won't actually prompt if PROMPTER returns a
+                 ;; non-string, which avoids what solaire-mode is trying to fix.
+                 (lambda (obj)
+                   (let ((result (if (stringp prompter)
+                                     (format prompter obj)
+                                   (funcall prompter obj))))
+                     (when (and (not unset-p) (stringp result))
+                       (setq unset-p t)
+                       (solaire-mode-fix-minibuffer 'unset))
+                     result))
+                 args)
+        (if unset-p (solaire-mode-fix-minibuffer))))))
 
 (provide 'solaire-mode)
 ;;; solaire-mode.el ends here
