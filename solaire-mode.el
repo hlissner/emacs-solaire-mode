@@ -118,7 +118,10 @@ Should accept one argument: the buffer and return truthy for buffers where
     (mode-line-inactive         . solaire-mode-line-inactive-face)
     (highlight-indentation-face . solaire-hl-line-face)
     ,@(unless (version<= emacs-version "26")
-        '((fringe               . solaire-fringe-face))))
+        '((fringe               . solaire-fringe-face)))
+    ;; emacs-solaire-mode#51
+    (treemacs-window-background-face . solaire-default-face)
+    (treemacs-hl-line-face . solaire-hl-line-face))
   "An alist of faces to remap when enabling `solaire-mode'."
   :group 'solaire-mode
   :type '(repeat (cons (face :tag "Source face")
