@@ -117,7 +117,7 @@ Should accept one argument: the buffer and return truthy for buffers where
     (mode-line-active           . solaire-mode-line-active-face)
     (mode-line-inactive         . solaire-mode-line-inactive-face)
     (highlight-indentation-face . solaire-hl-line-face)
-    ,@(unless (version<= emacs-version "26")
+    ,@(unless (<= emacs-major-version 26)
         '((fringe               . solaire-fringe-face)))
     ;; emacs-solaire-mode#51
     (treemacs-window-background-face . solaire-default-face)
