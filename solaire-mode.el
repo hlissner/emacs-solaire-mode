@@ -295,12 +295,9 @@ Meant to be used as a `load-theme' advice."
            ;; And that it's been successfully enabled.
            (memq theme custom-enabled-themes))
       (setq solaire-mode--supported-p
-            (ignore-errors
-              (let ((default1 (face-background 'default nil t))
-                    (default2 (face-background 'solaire-default-face nil t)))
-                (and default1
-                     default2
-                     (not (equal default1 default2)))))
+            (cl-loop for spec in (get theme 'theme-settings)
+                     if (eq (nth 1 spec) 'solaire-default-face)
+                     return t)
             solaire-mode--swapped-p nil
             solaire-mode--theme theme)  ; reset swap
       (when (bound-and-true-p solaire-global-mode)
