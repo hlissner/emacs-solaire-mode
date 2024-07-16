@@ -495,6 +495,20 @@ Meant to fix mismatched background on text in term buffers (should be used on
         (setf (elt ansi-term-color-vector 0) 'solaire-default-face))))
   (add-hook 'solaire-mode-hook #'solaire-mode--fix-term-mode)
 
+  ;;; vterm
+  (with-eval-after-load 'vterm
+    (define-advice vterm--get-color (:around (fn &rest args) fix-background)
+      "Fix hardcoded fallback to `default' face in vterm buffers."
+      (cl-letf* ((old-face-background (symbol-function #'face-background))
+                 ((symbol-function #'face-background)
+                  (lambda (face &rest args)
+                    (apply old-face-background
+                           (if (and (eq face 'default) (bound-and-true-p solaire-mode))
+                               'solaire-default-face
+                             face)
+                           args))))
+        (apply fn args))))
+
   ;;; mixed-pitch / variable-pitch
   ;; Reset solaire-mode so its remappings assimilate the remappings done by
   ;; `mixed-pitch-mode' and `variable-pitch-mode'.
