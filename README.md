@@ -134,6 +134,7 @@ The only (known) themes to support solaire-mode are:
 + [stimmung-themes]
 + [vscode-dark-plus-theme]
 + [wilmersdorf-theme]
++ [jetbrains-darcula-theme]
 
 If you know of more, feel free to PR them.
 
