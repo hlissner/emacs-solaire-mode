@@ -149,4 +149,4 @@ If you know of more, feel free to PR them.
 [vscode-dark-plus-theme]: https://github.com/ianpan870102/vscode-dark-plus-emacs-theme
 [wilmersdorf-theme]: https://github.com/ianpan870102/wilmersdorf-emacs-theme
 [jetbrains-darcula-theme]: https://github.com/ianyepan/jetbrains-darcula-emacs-theme
-[solarized-emacs]: https://github.com/bbatsov/solarized-emacs/tree/master
+[solarized-emacs]: https://github.com/bbatsov/solarized-emacs
