@@ -146,3 +146,4 @@ If you know of more, feel free to PR them.
 [stimmung-themes]: https://github.com/motform/stimmung-themes
 [vscode-dark-plus-theme]: https://github.com/ianpan870102/vscode-dark-plus-emacs-theme
 [wilmersdorf-theme]: https://github.com/ianpan870102/wilmersdorf-emacs-theme
+[jetbrains-darcula-theme]: https://github.com/ianyepan/jetbrains-darcula-emacs-theme
