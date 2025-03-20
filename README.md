@@ -134,6 +134,8 @@ The only (known) themes to support solaire-mode are:
 + [stimmung-themes]
 + [vscode-dark-plus-theme]
 + [wilmersdorf-theme]
++ [jetbrains-darcula-theme]
++ [solarized-emacs]
 
 If you know of more, feel free to PR them.
 
@@ -146,3 +148,5 @@ If you know of more, feel free to PR them.
 [stimmung-themes]: https://github.com/motform/stimmung-themes
 [vscode-dark-plus-theme]: https://github.com/ianpan870102/vscode-dark-plus-emacs-theme
 [wilmersdorf-theme]: https://github.com/ianpan870102/wilmersdorf-emacs-theme
+[jetbrains-darcula-theme]: https://github.com/ianyepan/jetbrains-darcula-emacs-theme
+[solarized-emacs]: https://github.com/bbatsov/solarized-emacs
