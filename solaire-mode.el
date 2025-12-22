@@ -152,6 +152,23 @@ non-nil), `solaire-mode-swap-faces-maybe' is used."
   :group 'solaire-mode
   :type '(repeat (or symbol regexp function)))
 
+(defcustom solaire-mode-supported-themes '()
+  "A list of themes to forcibly enable support for.
+
+By default, `solaire-mode' auto-disables itself if the enabled theme doesn't
+support it (for performance reasons). Any themes listed here will be treated as
+if they have support, whether or not that's true.
+
+This variable can be `:all' (force-enable solaire for all themes), nil (the
+default behavior), or a list of symbols (theme names), regexps (to be matched
+against the theme being enabled), or functions (that take a single argument: the
+theme as a symbol being enabled and returns non-nil if it is to be treated as
+supported)."
+  :group 'solaire-mode
+  :type '(choice (repeat (choice symbol regexp function))
+                 (const :tag "Force enable for all themes" :all)
+                 (const :tag "Only supported themes" nil)))
+
 (defvar solaire-mode--supported-p nil)
 (defvar solaire-mode--swapped-p nil)
 (defvar solaire-mode--theme nil)
@@ -295,9 +312,18 @@ Meant to be used as a `load-theme' advice."
            ;; And that it's been successfully enabled.
            (memq theme custom-enabled-themes))
       (setq solaire-mode--supported-p
-            (cl-loop for spec in (get theme 'theme-settings)
-                     if (eq (nth 1 spec) 'solaire-default-face)
-                     return t)
+            (cond ((eq solaire-mode-supported-themes :all))
+                  ((eq solaire-mode-supported-themes nil)
+                   (cl-loop for spec in (get theme 'theme-settings)
+                            if (eq (nth 1 spec) 'solaire-default-face)
+                            return t))
+                  ((listp solaire-mode-supported-themes)
+                   (cl-find-if
+                    (lambda (rule)
+                      (cond ((functionp rule) (funcall rule theme))
+                            ((stringp rule) (string-match-p rule (symbol-name theme)))
+                            ((symbolp rule) (eq rule theme))))
+                    solaire-mode-supported-themes)))
             solaire-mode--swapped-p nil
             solaire-mode--theme theme)  ; reset swap
       (when (bound-and-true-p solaire-global-mode)
