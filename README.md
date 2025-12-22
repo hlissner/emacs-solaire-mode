@@ -20,55 +20,60 @@ the latter a slightly different -- often darker -- background:
 This plugin accomplishes this by doing two things when activated:
 
 + `solaire-mode` buffer-locally remaps all the faces in
-  `solaire-mode-remap-alist`. e.g. `default` <-> `solaire-default-face`, and
-  `mode-line` <-> `solaire-mode-line-face`
-  
-  The latter faces are the (presumably) "adjusted" faces.
+  `solaire-mode-remap-alist`. e.g. `default` -> `solaire-default-face`, and
+  `mode-line` -> `solaire-mode-line-face`
 
 + `solaire-global-mode` will globally swap faces in `solaire-mode-swap-alist` IF
   your active theme is in `solaire-mode-themes-to-face-swap`. Use this if you
-  think a theme has its designated solaire-*-face colors the wrong way around.
-  
+  think your theme has its designated solaire-*-face colors the wrong way
+  around.
+
 Praise the sun.
 
-**Note:**
-+ Uses `face-remapping-alist`, which other plugins may overwrite.
-+ Tested mainly on Emacs 25.1+
-+ Works in GUI and terminal Emacs (with themes that support it).
-+ [Try jumping.](https://www.youtube.com/watch?v=-ZGlaAxB7nI)
+> [!IMPORTANT]
+> It is the responsibility of your active theme to style this package's faces to
+> look good. By default, `solaire-mode` will disable itself if a theme doesn't
+> appear to support it. See the "Configuration" section below covers how to add support to a
+> theme that lacks it.
 
+[Try jumping.](https://www.youtube.com/watch?v=-ZGlaAxB7nI)
 
 ## Install
-Solaire-mode is available on MELPA: `M-x package-install RET solaire-mode`
+`solaire-mode` is available on MELPA:
 
-### Doom Emacs
-Doom installs this package as part of the `:ui doom` module. No additional
-configuration is needed.
+- **package.el users:** `M-x package-install RET solaire-mode`
 
+- **straight.el users:** `(straight-use-package 'solaire-mode)`
 
-## Configuration
+- **Doom Emacs users:** Enable the `:ui doom` module (no additional
+  configuration needed).
+  
 Simply activate `solaire-global-mode`:
 
-```emacs-lisp
+```elisp
 (solaire-global-mode +1)
 ```
 
+
 ### Settings
-+ `solaire-mode-real-buffer-fn` (default: `solaire-mode-real-buffer-p`): The
+- `solaire-mode-real-buffer-fn` (default: `solaire-mode-real-buffer-p`): The
   predicate function used to determine if a buffer is "real" or not. It takes no
   arguments and must return truthy for buffers where `solaire-mode` should *not*
   be activated in.
-+ `solaire-mode-remap-alist`: An alist mapping original faces to replacement
+- `solaire-mode-remap-alist`: An alist mapping original faces to replacement
   faces, which will be buffer-locally remapped in any buffer `solaire-mode` is
   enabled in.
-+ `solaire-mode-swap-alist`: An alist mapping original faces to replacement
-  faces, which will be swapped globally if current theme is in
-  `solaire-mode-themes-to-face-swap`.
-+ `solaire-mode-themes-to-face-swap` (default: `()`): A list of themes to swap
-  faces in `solaire-mode-swap-alist` for. Can be symbols or regexps.
+- `solaire-mode-swap-alist`: An alist mapping original faces to replacement
+  faces, which will be swapped globally if `solaire-global-mode` is used and the
+  current theme is in `solaire-mode-themes-to-face-swap`.
+- `solaire-mode-themes-to-face-swap` (default: `()`): A list of themes to swap
+  faces in `solaire-mode-swap-alist` for. Can be symbols, regexps, or functions.
+- `solaire-mode-supported-themes` (default: `()`): Themes to ignore support for
+  and keep solaire-mode forcibly enabled for anyway. Can be `:all` (all themes)
+  or a list of symbols, regexps, or functions.
 
 ### Jolly cooperation with other plugins
-+ By default, `solaire-mode` remaps the mode-line faces. This interferes with
+- By default, `solaire-mode` remaps the mode-line faces. This interferes with
   certain mode-line packages like telephone-line or powerline, but works fine
   for doom-modeline. To disable this behavior use:
 
@@ -76,30 +81,37 @@ Simply activate `solaire-global-mode`:
   (dolist (face '(mode-line mode-line-inactive))
     (setf (alist-get face solaire-mode-remap-modeline) nil))
   ```
-+ It is up to themes to decide whether unreal buffers (i.e. non-file-visiting)
+- It is up to themes to decide whether unreal buffers (i.e. non-file-visiting)
   are lighter or darker than real buffers. If you don't like their arrangement,
   add that theme to `solaire-mode-themes-to-face-swap`:
 
   ```elisp
   (add-to-list 'solaire-mode-themes-to-face-swap 'doom-vibrant)
   ```
-  
+
   Then solaire-mode will swap all the faces in `solaire-mode-swap-alist` (for
   example, swapping the `default` face with `solaire-default-face`).
-  
-  You can add a regexp to `solaire-mode-themes-to-face-swap` to affect a family
-  of themes, e.g.
+
+  `solaire-mode-themes-to-face-swap` supports regexps and functions for more
+  granular control, e.g.
 
   ```elisp
   (add-to-list 'solaire-mode-themes-to-face-swap "^doom-")
+  ;; or
+  (add-to-list 'solaire-mode-themes-to-face-swap
+               (lambda (theme)
+                 (memq theme '(doom-one doom-vibrant doom-city-lights))))
   ```
+- This package uses `face-remap.el` to achieve its effect. Any packages that
+  utilize this can override it *or* be overridden by solaire-mode. Take care
+  when using multiple packages that use this machanism.
 
-  
+
 ## Theme support for solaire-mode
-`solaire-mode` will disable itself if the active theme doesn't support it, but
-to ensure support a theme must at least change `solaire-default-face`'s
-`:background`. My recommendation is that it is be *slightly* darker or lighter
-than `default`'s background.
+For the sake of performance, `solaire-mode` will disable itself if the active
+theme doesn't support it. "Support" means a theme must, at least, change
+`solaire-default-face`'s `:background`. My recommendation is that it be
+*slightly* darker than `default`'s background.
 
 For example `doom-one` (seen in the screenshot above) prefers
 `solaire-default-face` be darker than `default`:
@@ -123,26 +135,68 @@ For full support, themes can customize the following faces:
 | solaire-mode-line-inactive-face | mode-line-inactive   |
 | solaire-header-line-face        | header-line          |
 
-## Themes that support solaire-mode out of the box
-The only (known) themes to support solaire-mode are:
+### Known supported themes
++ [doom-themes](https://github.com/doomemacs/themes)
++ [nano-theme](https://github.com/404cn/nano-theme.el)
++ [spacemacs-theme](https://github.com/nashamri/spacemacs-theme)
++ [stimmung-themes](https://github.com/motform/stimmung-themes)
++ [vscode-dark-plus-theme](https://github.com/ianpan870102/vscode-dark-plus-emacs-theme)
++ [wilmersdorf-theme](https://github.com/ianpan870102/wilmersdorf-emacs-theme)
 
-+ [doom-themes]
-+ [nano-theme]
-+ [modus-themes]
-+ [parchment]
-+ [spacemacs-theme]
-+ [stimmung-themes]
-+ [vscode-dark-plus-theme]
-+ [wilmersdorf-theme]
+Feel free to PR more.
 
-If you know of more, feel free to PR them.
+### Unsupported themes
+If your theme doesn't support solaire-mode, here's what you should try before
+opening an issue:
 
+- Request your theme's author add support for it (by, at least, styling
+  `solaire-default-face`'s `:background`). Here are all the faces this package
+  remaps and what do:
 
-[doom-themes]: https://github.com/hlissner/emacs-doom-themes
-[modus-themes]: https://gitlab.com/protesilaos/modus-themes
-[nano-theme]: https://github.com/404cn/nano-theme.el
-[parchment]: https://github.com/ajgrf/parchment
-[spacemacs-theme]: https://github.com/nashamri/spacemacs-theme
-[stimmung-themes]: https://github.com/motform/stimmung-themes
-[vscode-dark-plus-theme]: https://github.com/ianpan870102/vscode-dark-plus-emacs-theme
-[wilmersdorf-theme]: https://github.com/ianpan870102/wilmersdorf-emacs-theme
+  | Original face              | Replacement face                |
+  |----------------------------|---------------------------------|
+  | default                    | solaire-default-face            |
+  | hl-line                    | solaire-hl-line-face            |
+  | region                     | solaire-region-face             |
+  | org-hide                   | solaire-org-hide-face           |
+  | org-indent                 | solaire-org-hide-face           |
+  | linum                      | solaire-line-number-face        |
+  | line-number                | solaire-line-number-face        |
+  | header-line                | solaire-header-line-face        |
+  | mode-line                  | solaire-mode-line-face          |
+  | mode-line-active           | solaire-mode-line-active-face   |
+  | mode-line-inactive         | solaire-mode-line-inactive-face |
+  | highlight-indentation-face | solaire-hl-line-face            |
+  | fringe                     | solaire-fringe-face             |
+- Use `custom-theme-set-faces` to add it yourself:
+
+  ``` elisp
+  ;;; after loading your theme
+  
+  (custom-theme-set-faces 'theme-that-doesnt-support-solaire-mode
+    '(solaire-default-face ((t (:background "black")))))
+  ```
+  
+  solaire-mode will detect this and recognize that the theme supports it.
+- If `custom-set-faces` is used instead, solaire-mode won't detect your change,
+  in which case modify `solaire-mode-supported-themes` to forcibly keep
+  solaire-mode enabled:
+
+  ``` elisp
+  ;;; after loading your theme and solaire-mode
+  
+  ;; Unconditionally activate for all themes:
+  (setq solaire-mode-supported-themes :all)
+  
+  ;; OR unconditionally activate for one theme:
+  (add-to-list 'solaire-mode-supported-themes 'theme-that-doesnt-support-solaire-mode)
+  
+  ;; OR unconditionally activate for all themes matching an arbitrary rule (regexp
+  ;; or function):
+  (add-to-list 'solaire-mode-supported-themes "^modus-")
+  (add-to-list 'solaire-mode-supported-themes
+               (lambda (theme)
+                 (eq (plist-get (get theme 'theme-properties)
+                                :background-mode)
+                     'dark)))
+  ```
