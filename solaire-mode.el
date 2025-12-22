@@ -150,7 +150,7 @@ should be swapped.
 If the regexp or symbol matches the current theme (or the function returns
 non-nil), `solaire-mode-swap-faces-maybe' is used."
   :group 'solaire-mode
-  :type '(repeat (or symbol regexp function)))
+  :type '(repeat (choice symbol regexp function)))
 
 (defcustom solaire-mode-supported-themes '()
   "A list of themes to forcibly enable support for.
