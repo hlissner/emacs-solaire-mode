@@ -311,21 +311,23 @@ Meant to be used as a `load-theme' advice."
            (get theme 'theme-feature)
            ;; And that it's been successfully enabled.
            (memq theme custom-enabled-themes))
-      (setq solaire-mode--supported-p
-            (cond ((eq solaire-mode-supported-themes :all))
-                  ((eq solaire-mode-supported-themes nil)
-                   (cl-loop for spec in (get theme 'theme-settings)
-                            if (eq (nth 1 spec) 'solaire-default-face)
-                            return t))
-                  ((listp solaire-mode-supported-themes)
-                   (cl-find-if
-                    (lambda (rule)
-                      (cond ((functionp rule) (funcall rule theme))
-                            ((stringp rule) (string-match-p rule (symbol-name theme)))
-                            ((symbolp rule) (eq rule theme))))
-                    solaire-mode-supported-themes)))
-            solaire-mode--swapped-p nil
-            solaire-mode--theme theme)  ; reset swap
+      (let ((supported-themes
+             (bound-and-true-p solaire-mode-supported-themes)))
+        (setq solaire-mode--supported-p
+              (cond ((eq supported-themes :all))
+                    ((eq supported-themes nil)
+                     (cl-loop for spec in (get theme 'theme-settings)
+                              if (eq (nth 1 spec) 'solaire-default-face)
+                              return t))
+                    ((listp supported-themes)
+                     (cl-find-if
+                      (lambda (rule)
+                        (cond ((functionp rule) (funcall rule theme))
+                              ((stringp rule) (string-match-p rule (symbol-name theme)))
+                              ((symbolp rule) (eq rule theme))))
+                      supported-themes)))
+              solaire-mode--swapped-p nil
+              solaire-mode--theme theme))  ; reset swap
       (when (bound-and-true-p solaire-global-mode)
         (if solaire-mode--supported-p
             (solaire-mode-swap-faces-maybe)
