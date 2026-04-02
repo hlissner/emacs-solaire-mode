@@ -357,7 +357,7 @@ create these buffers early and insert whitespace in them."
         ;; Minibuffers must be non-empty for solaire-default-face to apply to
         ;; the whole line (otherwise it terminates at BOL).
         (when (= (buffer-size) 0)
-          (insert " "))
+          (insert (propertize " " 'invisible t)))
         ;; Don't allow users to kill these buffers, as it destroys the hack
         (add-hook 'kill-buffer-query-functions #'ignore nil 'local)
         (solaire-mode +1)))))
