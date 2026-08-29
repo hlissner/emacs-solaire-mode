@@ -183,10 +183,11 @@ supported)."
 
 (defun solaire-mode--map-inherit (spec fn)
   "Return a copy of face SPEC with `:inherit' face lists mapped through FN.
-FN is called with a list of face symbols and returns the new list; if it
-returns nil the `:inherit' attribute is dropped from that entry.  Non-face
-values (nil, `unspecified', or an inline anonymous face such as
-\(:foreground \"red\")) are passed through untouched."
+
+FN is called with a list of face symbols and returns the new list; if it returns
+nil the `:inherit' attribute is dropped from that entry. Non-face values (nil,
+`unspecified', or an inline anonymous face such as \(:foreground \"red\")) are
+passed through untouched."
   (mapcar
    (lambda (entry)
      (let* ((display (car entry))
@@ -236,8 +237,8 @@ SPECS is an alist of (FACE . SPEC) overriding current definitions."
                   if (solaire-mode--inherits-p p target specs seen)
                   return t))))
 
-(defun solaire-mode--swap-faces (&optional pairs)
-  "Swap the face specs named in PAIRS, defaulting to `solaire-mode-swap-alist'."
+(defun solaire-mode--swap-faces (pairs)
+  "Swap the face specs named in PAIRS."
   (let ((custom--inhibit-theme-enable nil)
         (settings (get solaire-mode--theme 'theme-settings))
         specs)
