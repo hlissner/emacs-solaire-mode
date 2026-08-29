@@ -44,7 +44,7 @@
 
 
 ;;
-;;; Faces
+;;; * Faces
 
 ;;;###autoload
 (defface solaire-default-face '((t :inherit default))
@@ -94,7 +94,7 @@ Used to camoflauge the leading asterixes in `org-mode' when
 
 
 ;;
-;;; Options
+;;; * Options
 
 (defcustom solaire-mode-real-buffer-fn #'solaire-mode-real-buffer-p
   "The function that determines buffer eligability for `solaire-mode'.
@@ -175,7 +175,7 @@ supported)."
 
 
 ;;
-;;; Helpers
+;;; * Helpers
 
 (defun solaire-mode-real-buffer-p ()
   "Return t if the current buffer is a real (file-visiting) buffer."
@@ -188,32 +188,30 @@ FN is called with a list of face symbols and returns the new list; if it returns
 nil the `:inherit' attribute is dropped from that entry. Non-face values (nil,
 `unspecified', or an inline anonymous face such as \(:foreground \"red\")) are
 passed through untouched."
-  (mapcar
-   (lambda (entry)
-     (let* ((display (car entry))
-            (rest (cdr entry))
-            ;; Handle both (DISPLAY ATTS) and the old (DISPLAY . ATTS) form.
-            (nested (not (keywordp (car rest))))
-            (atts (if nested (car rest) rest))
-            out)
-       (while atts
-         (let ((key (car atts))
-               (val (cadr atts)))
-           (if (or (not (eq key :inherit))
-                   (null val)
-                   (eq val 'unspecified)
-                   (and (consp val) (keywordp (car val))))
-               (setq out (cons val (cons key out)))
-             (let ((faces (funcall fn (if (consp val)
-                                          (copy-sequence val)
-                                        (list val)))))
-               (when faces
-                 (setq out (cons (if (cdr faces) faces (car faces))
-                                 (cons key out))))))
-           (setq atts (cddr atts))))
-       (setq out (nreverse out))
-       (cons display (if nested (list out) out))))
-   spec))
+  (mapcar (lambda (entry)
+            (let* ((display (car entry))
+                   (rest (cdr entry))
+                   ;; Handle both (DISPLAY ATTS) and the old (DISPLAY . ATTS) form.
+                   (nested (not (keywordp (car rest))))
+                   (atts (if nested (car rest) rest))
+                   out)
+              (while atts
+                (let ((key (car atts))
+                      (val (cadr atts)))
+                  (if (or (not (eq key :inherit))
+                          (null val)
+                          (eq val 'unspecified)
+                          (and (consp val) (keywordp (car val))))
+                      (setq out (cons val (cons key out)))
+                    (when-let* ((faces (funcall fn (if (consp val)
+                                                       (copy-sequence val)
+                                                     (list val)))))
+                      (setq out (cons (if (cdr faces) faces (car faces))
+                                      (cons key out)))))
+                  (setq atts (cddr atts))))
+              (setq out (nreverse out))
+              (cons display (if nested (list out) out))))
+          spec))
 
 (defun solaire-mode--face-parents (face specs)
   (if-let* ((cell (assq face specs)))
@@ -239,8 +237,8 @@ SPECS is an alist of (FACE . SPEC) overriding current definitions."
 
 (defun solaire-mode--swap-faces (pairs)
   "Swap the face specs named in PAIRS."
-  (let ((custom--inhibit-theme-enable nil)
-        (settings (get solaire-mode--theme 'theme-settings))
+  (let ((settings (get solaire-mode--theme 'theme-settings))
+        custom--inhibit-theme-enable
         specs)
     (cl-flet ((theme-spec (face)
                 (cl-loop for s in settings
@@ -301,7 +299,7 @@ See `solaire-mode-themes-to-face-swap' for themes where faces will be swapped."
 
 
 ;;
-;;; `solaire-mode' / `solaire-global-mode'
+;;; * `solaire-mode' / `solaire-global-mode'
 
 ;;;###autoload
 (define-minor-mode solaire-mode
@@ -312,7 +310,6 @@ additional mode-specific fixes may live. Lastly, adjusts the fringes for the
 current frame."
   :lighter "" ; should be obvious it's on
   :init-value nil
-  ;; Don't kick in if the current theme doesn't support solaire-mode.
   (if (not solaire-mode--supported-p)
       (setq solaire-mode nil)
     (mapc #'face-remap-remove-relative solaire-mode--remaps)
@@ -368,13 +365,13 @@ See `solaire-mode-reset' for details."
 
 
 ;;
-;;; Bootstrap
+;;; * Bootstrap
 
+;; The `progn' assures the whole form is inserted into the package's autoloads
+;; verbatim, rather than as `autoload' forms, so that this `load-theme' advice
+;; is active as soon as possible.
 ;;;###autoload
 (progn
-  ;; The `progn' assures the whole form is inserted into the package's autoloads
-  ;; verbatim, rather than as `autoload' forms, so that this `load-theme' advice
-  ;; is active as soon as possible.
   (defun solaire-mode--prepare-for-theme-a (theme &rest _)
     "Prepare solaire-mode for THEME.
 Meant to be used as a `load-theme' advice."
@@ -459,7 +456,7 @@ without its autoloads. Normally, you shouldn't directly call this."
 
 
 ;;
-;;; Package compatibility hackery
+;;; * Package compatibility hackery
 
 (with-no-warnings  ; Shush, byte-compiler! Trust in Solaire.
   ;; which-key and transient create their popups in splits and in
