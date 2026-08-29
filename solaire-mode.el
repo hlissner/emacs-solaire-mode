@@ -261,19 +261,17 @@ SPECS is an alist of (FACE . SPEC) overriding current definitions."
           (when (and spec1 spec2)
             (setf (alist-get src specs)  (rename-inherit spec2 src nil)
                   (alist-get dest specs) (rename-inherit spec1 dest src))))))
-    ;; Drop edges that loop.
-    (dolist (cell specs)
-      (setcdr
-       cell (solaire-mode--map-inherit
-             (cdr cell)
-             (lambda (parents)
-               (cl-loop for p in parents
-                        unless (solaire-mode--inherits-p p (car cell) specs)
-                        collect p)))))
-    (when specs
-      (apply #'custom-theme-set-faces 'solaire-swapped-faces-theme
-             (cl-loop for cell in specs
-                      collect (list (car cell) (cdr cell)))))))
+    (cl-loop for cell in specs
+             collect
+             (list (car cell)
+                   ;; Drop edges that loop.
+                   (solaire-mode--map-inherit
+                    (cdr cell)
+                    (lambda (parents)
+                      (cl-loop for p in parents
+                               unless (solaire-mode--inherits-p
+                                       p (car cell) specs)
+                               collect p)))))))
 
 (defun solaire-mode-swap-faces-maybe ()
   "Globally swap the current theme's background faces.
@@ -291,11 +289,13 @@ See `solaire-mode-themes-to-face-swap' for themes where faces will be swapped."
                       ((symbolp rule)
                        (eq solaire-mode--theme rule))))
               solaire-mode-themes-to-face-swap))
-    (let ((swap-theme 'solaire-swapped-faces-theme))
+    (let ((swap-theme 'solaire-swapped-faces-theme)
+          (faces (solaire-mode--swap-faces solaire-mode-swap-alist)))
       (custom-declare-theme swap-theme nil)
       (put swap-theme 'theme-settings nil)
-      (solaire-mode--swap-faces solaire-mode-swap-alist)
-      (enable-theme swap-theme)
+      (when faces
+        (apply #'custom-theme-set-faces swap-theme faces)
+        (enable-theme swap-theme))
       (setq solaire-mode--swapped-p t))))
 
 
