@@ -35,7 +35,7 @@
 ;;
 ;;; Code:
 
-(require 'cl-lib)
+(eval-when-compile (require 'cl-lib))
 (require 'face-remap)
 
 (defgroup solaire-mode nil
@@ -169,6 +169,7 @@ supported)."
                  (const :tag "Only supported themes" nil)))
 
 (defvar solaire-mode--supported-p nil)
+(defvar solaire-mode--swap-supported-p nil)
 (defvar solaire-mode--swapped-p nil)
 (defvar solaire-mode--theme nil)
 (defvar-local solaire-mode--remaps nil)
@@ -276,17 +277,9 @@ SPECS is an alist of (FACE . SPEC) overriding current definitions."
 
 See `solaire-mode-swap-alist' for list of faces that are swapped.
 See `solaire-mode-themes-to-face-swap' for themes where faces will be swapped."
-  (when (and solaire-mode--supported-p
-             (null solaire-mode--swapped-p)
-             (cl-find-if
-              (lambda (rule)
-                (cond ((functionp rule)
-                       (funcall rule solaire-mode--theme))
-                      ((stringp rule)
-                       (string-match-p rule (symbol-name solaire-mode--theme)))
-                      ((symbolp rule)
-                       (eq solaire-mode--theme rule))))
-              solaire-mode-themes-to-face-swap))
+  (when (and (null solaire-mode--swapped-p)
+             solaire-mode--supported-p
+             solaire-mode--swap-supported-p)
     (let ((swap-theme 'solaire-swapped-faces-theme)
           (faces (solaire-mode--swap-faces solaire-mode-swap-alist)))
       (custom-declare-theme swap-theme nil)
@@ -381,23 +374,27 @@ Meant to be used as a `load-theme' advice."
            (get theme 'theme-feature)
            ;; And that it's been successfully enabled.
            (memq theme custom-enabled-themes))
-      (let ((supported-themes
-             (bound-and-true-p solaire-mode-supported-themes)))
-        (setq solaire-mode--supported-p
-              (cond ((eq supported-themes :all))
-                    ((eq supported-themes nil)
-                     (cl-loop for spec in (get theme 'theme-settings)
-                              if (eq (nth 1 spec) 'solaire-default-face)
-                              return t))
-                    ((listp supported-themes)
-                     (cl-find-if
-                      (lambda (rule)
-                        (cond ((functionp rule) (funcall rule theme))
-                              ((stringp rule) (string-match-p rule (symbol-name theme)))
-                              ((symbolp rule) (eq rule theme))))
-                      supported-themes)))
-              solaire-mode--swapped-p nil
-              solaire-mode--theme theme))  ; reset swap
+      (cl-flet
+          ((supported-p (theme var)
+             (let ((rules (if (boundp var) (symbol-value var))))
+               (or (eq rules :all)
+                   (cl-loop for rule in rules
+                            if (cond ((functionp rule)
+                                      (funcall rule theme))
+                                     ((stringp rule)
+                                      (string-match-p rule (symbol-name theme)))
+                                     ((symbolp rule)
+                                      (eq rule theme)))
+                            return t)))))
+        (setq solaire-mode--theme theme
+              solaire-mode--supported-p
+              (or (cl-loop for spec in (get theme 'theme-settings)
+                           if (eq (nth 1 spec) 'solaire-default-face)
+                           return t)
+                  (supported-p theme 'solaire-mode-supported-themes))
+              solaire-mode--swap-supported-p
+              (supported-p theme 'solaire-mode-themes-to-face-swap)
+              solaire-mode--swapped-p nil))
       (when (bound-and-true-p solaire-global-mode)
         (if solaire-mode--supported-p
             (solaire-mode-swap-faces-maybe)
@@ -445,9 +442,9 @@ This is only necessary if `solaire-mode--prepare-for-theme-a' wasn't executed
 when the user loaded their latest theme. E.g. the user loads this package
 without its autoloads. Normally, you shouldn't directly call this."
   (unless solaire-mode--theme
-    (let ((theme
-           (cl-find-if (lambda (th) (get th 'theme-feature))
-                       custom-enabled-themes)))
+    (let ((theme (cl-loop for th in custom-enabled-themes
+                          if (get th 'theme-feature)
+                          return th)))
       (and (symbolp theme)
            (custom-theme-enabled-p theme)
            (solaire-mode--prepare-for-theme-a theme)))))
