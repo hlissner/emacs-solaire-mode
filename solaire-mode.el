@@ -293,7 +293,8 @@ See `solaire-mode-themes-to-face-swap' for themes where faces will be swapped."
           (faces (solaire-mode--swap-faces solaire-mode-swap-alist)))
       (custom-declare-theme swap-theme nil)
       (put swap-theme 'theme-settings nil)
-      (when faces
+      (if (not faces)
+          (disable-theme swap-theme)
         (apply #'custom-theme-set-faces swap-theme faces)
         (enable-theme swap-theme))
       (setq solaire-mode--swapped-p t))))
