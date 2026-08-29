@@ -181,24 +181,98 @@ supported)."
   "Return t if the current buffer is a real (file-visiting) buffer."
   (buffer-file-name (buffer-base-buffer)))
 
-(defun solaire-mode--swap-faces (src-face dest-face)
-  "Swap SRC-FACE's spec with DEST-FACE's.
-If FEATURE is t, swap FACES immediately."
-  (let* ((custom--inhibit-theme-enable nil)
-         (theme-settings (get solaire-mode--theme 'theme-settings))
-         (spec1 (cl-loop for spec in theme-settings
-                         for face = (nth 1 spec)
-                         if (eq face src-face)
-                         return (nth 3 spec)))
-         (spec2 (cl-loop for spec in theme-settings
-                         for face = (nth 1 spec)
-                         if (eq face dest-face)
-                         return (nth 3 spec))))
-    (when (and spec1 spec2)
-      (custom-theme-set-faces
-       'solaire-swapped-faces-theme
-       `(,src-face ,spec2)
-       `(,dest-face ,spec1)))))
+(defun solaire-mode--map-inherit (spec fn)
+  "Return a copy of face SPEC with `:inherit' face lists mapped through FN.
+FN is called with a list of face symbols and returns the new list; if it
+returns nil the `:inherit' attribute is dropped from that entry.  Non-face
+values (nil, `unspecified', or an inline anonymous face such as
+\(:foreground \"red\")) are passed through untouched."
+  (mapcar
+   (lambda (entry)
+     (let* ((display (car entry))
+            (rest (cdr entry))
+            ;; Handle both (DISPLAY ATTS) and the old (DISPLAY . ATTS) form.
+            (nested (not (keywordp (car rest))))
+            (atts (if nested (car rest) rest))
+            out)
+       (while atts
+         (let ((key (car atts))
+               (val (cadr atts)))
+           (if (or (not (eq key :inherit))
+                   (null val)
+                   (eq val 'unspecified)
+                   (and (consp val) (keywordp (car val))))
+               (setq out (cons val (cons key out)))
+             (let ((faces (funcall fn (if (consp val)
+                                          (copy-sequence val)
+                                        (list val)))))
+               (when faces
+                 (setq out (cons (if (cdr faces) faces (car faces))
+                                 (cons key out))))))
+           (setq atts (cddr atts))))
+       (setq out (nreverse out))
+       (cons display (if nested (list out) out))))
+   spec))
+
+(defun solaire-mode--face-parents (face specs)
+  (if-let* ((cell (assq face specs)))
+      (let (faces)
+        (solaire-mode--map-inherit
+         (cdr cell) (lambda (fs) (push fs faces) fs))
+        (delete-dups (nreverse faces)))
+    (when (facep face)
+      (let ((v (face-attribute face :inherit)))
+        (cond ((or (null v) (eq v 'unspecified)) nil)
+              ((consp v) v)
+              ((list v)))))))
+
+(defun solaire-mode--inherits-p (face target specs &optional seen)
+  "Return non-nil if FACE reaches TARGET through `:inherit'.
+SPECS is an alist of (FACE . SPEC) overriding current definitions."
+  (cond ((eq face target))
+        ((memq face seen) nil)
+        ((cl-loop with seen = (cons face seen)
+                  for p in (solaire-mode--face-parents face specs)
+                  if (solaire-mode--inherits-p p target specs seen)
+                  return t))))
+
+(defun solaire-mode--swap-faces (&optional pairs)
+  "Swap the face specs named in PAIRS, defaulting to `solaire-mode-swap-alist'."
+  (let ((custom--inhibit-theme-enable nil)
+        (settings (get solaire-mode--theme 'theme-settings))
+        specs)
+    (cl-flet ((theme-spec (face)
+                (cl-loop for s in settings
+                         if (and (eq (nth 0 s) 'theme-face)
+                                 (eq (nth 1 s) face))
+                         return (nth 3 s)))
+              (rename-inherit (spec old new)
+                (solaire-mode--map-inherit
+                 spec (lambda (faces)
+                        (cl-loop for f in faces
+                                 if (eq f old) collect new
+                                 else collect f)))))
+      (dolist (pair pairs)
+        (let* ((src (car pair))
+               (dest (cdr pair))
+               (spec1 (theme-spec src))
+               (spec2 (theme-spec dest)))
+          (when (and spec1 spec2)
+            (setf (alist-get src specs)  (rename-inherit spec2 src nil)
+                  (alist-get dest specs) (rename-inherit spec1 dest src))))))
+    ;; Drop edges that loop.
+    (dolist (cell specs)
+      (setcdr
+       cell (solaire-mode--map-inherit
+             (cdr cell)
+             (lambda (parents)
+               (cl-loop for p in parents
+                        unless (solaire-mode--inherits-p p (car cell) specs)
+                        collect p)))))
+    (when specs
+      (apply #'custom-theme-set-faces 'solaire-swapped-faces-theme
+             (cl-loop for cell in specs
+                      collect (list (car cell) (cdr cell)))))))
 
 (defun solaire-mode-swap-faces-maybe ()
   "Globally swap the current theme's background faces.
@@ -219,9 +293,7 @@ See `solaire-mode-themes-to-face-swap' for themes where faces will be swapped."
     (let ((swap-theme 'solaire-swapped-faces-theme))
       (custom-declare-theme swap-theme nil)
       (put swap-theme 'theme-settings nil)
-      (dolist (faces solaire-mode-swap-alist)
-        (when (cdr faces)
-          (solaire-mode--swap-faces (car faces) (cdr faces))))
+      (solaire-mode--swap-faces solaire-mode-swap-alist)
       (enable-theme swap-theme)
       (setq solaire-mode--swapped-p t))))
 
