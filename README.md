@@ -136,14 +136,9 @@ For full support, themes can customize the following faces:
 | solaire-header-line-face        | header-line          |
 
 ### Known supported themes
-+ [doom-themes](https://github.com/doomemacs/themes)
-+ [nano-theme](https://github.com/404cn/nano-theme.el)
-+ [spacemacs-theme](https://github.com/nashamri/spacemacs-theme)
-+ [stimmung-themes](https://github.com/motform/stimmung-themes)
-+ [vscode-dark-plus-theme](https://github.com/ianpan870102/vscode-dark-plus-emacs-theme)
-+ [wilmersdorf-theme](https://github.com/ianpan870102/wilmersdorf-emacs-theme)
-
-Feel free to PR more.
+A list of known supported (and unsupported) themes can be found [on this repo's
+wiki](https://github.com/hlissner/emacs-solaire-mode/wiki/themes). Open an issue
+if you'd like to suggest changes.
 
 ### Unsupported themes
 If your theme doesn't support solaire-mode, here's what you should try before
