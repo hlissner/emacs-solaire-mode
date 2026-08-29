@@ -9,7 +9,7 @@
 ;; Version: 2.1.0
 ;; Keywords: dim bright window buffer faces
 ;; Homepage: https://github.com/hlissner/emacs-solaire-mode
-;; Package-Requires: ((emacs "25.1") (cl-lib "0.5"))
+;; Package-Requires: ((emacs "27.1") (cl-lib "0.5"))
 ;;
 ;; This file is not part of GNU Emacs.
 ;;
@@ -117,8 +117,7 @@ Should accept one argument: the buffer and return truthy for buffers where
     (mode-line-active           . solaire-mode-line-active-face)
     (mode-line-inactive         . solaire-mode-line-inactive-face)
     (highlight-indentation-face . solaire-hl-line-face)
-    ,@(unless (<= emacs-major-version 26)
-        '((fringe               . solaire-fringe-face)))
+    (fringe                     . solaire-fringe-face)
     ;; emacs-solaire-mode#51
     (treemacs-window-background-face . solaire-default-face)
     (treemacs-hl-line-face . solaire-hl-line-face))
@@ -389,86 +388,6 @@ without its autoloads. Normally, you shouldn't directly call this."
 ;;; Package compatibility hackery
 
 (with-no-warnings  ; Shush, byte-compiler! Trust in Solaire.
-  (when (< emacs-major-version 27)
-    ;;; Fixes for Emacs <=26 fringes
-    ;; HACK The fringe cannot have a buffer-local remapping on Emacs <= 26, so
-    ;;      we jump through hoops to reset it (globally) whenever it is likely
-    ;;      that the fringe has lost its background color.
-    (advice-add #'load-theme :after #'solaire-mode-reset)
-
-    ;; HACK The fringe can become unstyled when deleting or refocusing frames.
-    (add-hook 'focus-in-hook #'solaire-mode-reset)
-
-    ;; HACK Hide the fringe in the minibuffer or which-key frames, since it
-    ;;      serves no purpose there, and its incorrect color stands out as ugly.
-    (defun solaire-mode--hide-fringes-in-minibuffer-h (&rest _)
-      "Hide the fringe in the minibuffer.
-A global fringe color means the minibuffer (with its fringes) will always stand
-out, so we remove them (in which-key popups too).
-
-Only necessary for Emacs <= 26."
-      (when (assq 'fringe solaire-mode-remap-alist)
-        (set-window-fringes (minibuffer-window) 0 0 nil)))
-
-    (defun solaire-mode--hide-fringes-in-which-key-buffer (&rest _)
-      "Hide the minibuffer in the `which-key' window.
-Only necessary for Emacs <= 26."
-      (when (assq 'fringe solaire-mode-remap-alist)
-        (solaire-mode--hide-fringes-in-minibuffer-h)
-        (set-window-fringes (get-buffer-window which-key--buffer) 0 0 nil)))
-
-    (add-hook 'solaire-mode-hook #'solaire-mode--hide-fringes-in-minibuffer-h)
-    (add-hook 'minibuffer-setup-hook #'solaire-mode--hide-fringes-in-minibuffer-h)
-    (add-hook 'window-configuration-change-hook #'solaire-mode--hide-fringes-in-minibuffer-h)
-    (with-eval-after-load 'which-key
-      (advice-add 'which-key--show-buffer-side-window
-                  :after #'solaire-mode--hide-fringes-in-which-key-buffer))
-
-    ;; Our last ditch effort to keep fringes in line (they occasionally forget
-    ;; their color due to face shenanigans on Emacs 26).
-    (defun solaire-mode-fix-fringe ()
-      "Toggle the `fringe's new background.
-If ARG is non-nil, match `solaire-fringe-face's background, otherwise
-`default's.
-
-Only necessary for Emacs <= 26."
-      (when (assq 'fringe solaire-mode-remap-alist)
-        (set-face-background
-         'fringe
-         (if solaire-mode
-             (face-background 'default nil t)
-           (unless (cl-find-if (apply-partially #'buffer-local-value 'solaire-mode)
-                               (buffer-list))
-             (face-background 'solaire-fringe-face nil t))))))
-    (add-hook 'solaire-mode-hook #'solaire-mode-fix-fringe)
-
-    ;;; `hl-line'
-    ;; HACK On Emacs <=26, when point is on the last (or second to last) line
-    ;;      and solaire-mode is remapping the hl-line face, hl-line's highlight
-    ;;      bleeds into the rest of the window after eob. On Emacs 27 this no
-    ;;      longer happens. This tries to fix it for 26 users, but it imposes
-    ;;      another problem: the 2nd-to-last line will only be highlighted up to
-    ;;      the (n-1)th character, but I think that is the lesser evil.
-    (defun solaire-mode-hl-line-range-fn ()
-      "Adjust `hl-line's overlay to avoid EOB.
-
-This is needed to avoid a face-remap bug in Emacs 26 and earlier that causes
-hl-line's overlay to spill out into the rest of the window."
-      (if solaire-mode
-          (let ((bol (line-beginning-position))
-                (eol (line-end-position))
-                (eob (point-max)))
-            (cond ((= bol eob)
-                   nil)
-                  ((= (1+ eol) eob)
-                   (cons bol (1- eob)))
-                  ((or (= eol eob) (eobp))
-                   (cons bol eol))
-                  ((cons bol (line-beginning-position 2)))))
-        (cons (line-beginning-position)
-              (line-beginning-position 2))))
-    (setq hl-line-range-function #'solaire-mode-hl-line-range-fn))
-
   ;; which-key and transient create their popups in splits and in
   ;; fundamental-mode, which `solaire-global-mode' can't reach. This fixes that.
   (defun solaire-mode--enable-if-global ()
