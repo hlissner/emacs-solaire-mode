@@ -38,7 +38,7 @@
 (eval-when-compile (require 'cl-lib))
 (require 'face-remap)
 
-(defgroup solaire-mode nil
+(defgroup solaire nil
   "Options for solaire-mode."
   :group 'faces)
 
@@ -48,49 +48,39 @@
 
 ;;;###autoload
 (defface solaire-default-face '((t :inherit default))
-  "Alternative version of the `default' face."
-  :group 'solaire-mode)
+  "Alternative version of the `default' face.")
 
 (defface solaire-fringe-face '((t :inherit solaire-default-face))
-  "Alternative version of the `fringe' face."
-  :group 'solaire-mode)
+  "Alternative version of the `fringe' face.")
 
 (defface solaire-line-number-face
   `((t :inherit (,(if (boundp 'display-line-numbers) 'line-number 'linum)
                  solaire-default-face)))
   "Alternative face for `line-number'.
-Used by native line numbers in Emacs 26+ and `linum'."
-  :group 'solaire-mode)
+Used by native line numbers in Emacs 26+ and `linum'.")
 
 (defface solaire-hl-line-face '((t :inherit hl-line))
-  "Alternative face for the current line, highlighted by `hl-line'."
-  :group 'solaire-mode)
+  "Alternative face for the current line, highlighted by `hl-line'.")
 
 (defface solaire-org-hide-face '((t :inherit org-hide))
   "Alternative face for `org-hide'.
 Used to camoflauge the leading asterixes in `org-mode' when
-`org-hide-leading-stars' is non-nil."
-  :group 'solaire-mode)
+`org-hide-leading-stars' is non-nil.")
 
 (defface solaire-region-face '((t :inherit region))
-  "Alternative face for `region' (the active selection)."
-  :group 'solaire-mode)
+  "Alternative face for `region' (the active selection).")
 
 (defface solaire-mode-line-face '((t :inherit mode-line))
-  "Alternative face for the `mode-line' face."
-  :group 'solaire-mode)
+  "Alternative face for the `mode-line' face.")
 
 (defface solaire-mode-line-active-face '((t :inherit mode-line-active))
-  "Alternative face for the `mode-line-active' face (Emacs 29+)."
-  :group 'solaire-mode)
+  "Alternative face for the `mode-line-active' face (Emacs 29+).")
 
 (defface solaire-mode-line-inactive-face '((t :inherit mode-line-inactive))
-  "Alternative face for the `mode-line-inactive' face."
-  :group 'solaire-mode)
+  "Alternative face for the `mode-line-inactive' face.")
 
 (defface solaire-header-line-face '((t :inherit header-line))
-  "Alternative face for the `header-line' face."
-  :group 'solaire-mode)
+  "Alternative face for the `header-line' face.")
 
 
 ;;
@@ -101,7 +91,6 @@ Used to camoflauge the leading asterixes in `org-mode' when
 
 Should accept one argument: the buffer and return truthy for buffers where
 `solaire-mode' should *not* be activated."
-  :group 'solaire-mode
   :type 'function)
 
 (defcustom solaire-mode-remap-alist
@@ -122,7 +111,6 @@ Should accept one argument: the buffer and return truthy for buffers where
     (treemacs-window-background-face . solaire-default-face)
     (treemacs-hl-line-face . solaire-hl-line-face))
   "An alist of faces to remap when enabling `solaire-mode'."
-  :group 'solaire-mode
   :type '(repeat (cons (face :tag "Source face")
                        (face :tag "Destination face"))))
 
@@ -134,7 +122,6 @@ This is used when the current theme is in `solaire-mode-themes-to-face-swap'.
 The CAR is the package to wait for before performing the swap.
 The CDR is a list of cons cells mapping the original face to the new face to
 remap them to."
-  :group 'solaire-mode
   :type '(repeat (cons (face :tag "Source face")
                        (face :tag "Destination face"))))
 
@@ -148,7 +135,6 @@ should be swapped.
 
 If the regexp or symbol matches the current theme (or the function returns
 non-nil), `solaire-mode-swap-faces-maybe' is used."
-  :group 'solaire-mode
   :type '(repeat (choice symbol regexp function)))
 
 (defcustom solaire-mode-supported-themes '()
@@ -163,7 +149,6 @@ default behavior), or a list of symbols (theme names), regexps (to be matched
 against the theme being enabled), or functions (that take a single argument: the
 theme as a symbol being enabled and returns non-nil if it is to be treated as
 supported)."
-  :group 'solaire-mode
   :type '(choice (repeat (choice symbol regexp function))
                  (const :tag "Force enable for all themes" :all)
                  (const :tag "Only supported themes" nil)))
