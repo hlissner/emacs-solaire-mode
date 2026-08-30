@@ -363,26 +363,26 @@ Meant to be used as a `load-theme' advice."
            (get theme 'theme-feature)
            ;; And that it's been successfully enabled.
            (memq theme custom-enabled-themes))
-      (cl-flet
-          ((supported-p (theme var)
-             (let ((rules (if (boundp var) (symbol-value var))))
-               (or (eq rules :all)
-                   (cl-loop for rule in rules
-                            if (cond ((functionp rule)
-                                      (funcall rule theme))
-                                     ((stringp rule)
-                                      (string-match-p rule (symbol-name theme)))
-                                     ((symbolp rule)
-                                      (eq rule theme)))
-                            return t)))))
+      (let ((supported-p
+             (lambda (theme var)
+               (let ((rules (if (boundp var) (symbol-value var))))
+                 (or (eq rules :all)
+                     (cl-loop for rule in rules
+                              if (cond ((functionp rule)
+                                        (funcall rule theme))
+                                       ((stringp rule)
+                                        (string-match-p rule (symbol-name theme)))
+                                       ((symbolp rule)
+                                        (eq rule theme)))
+                              return t))))))
         (setq solaire-mode--theme theme
               solaire-mode--supported-p
               (or (cl-loop for spec in (get theme 'theme-settings)
                            if (eq (nth 1 spec) 'solaire-default-face)
                            return t)
-                  (supported-p theme 'solaire-mode-supported-themes))
+                  (funcall supported-p theme 'solaire-mode-supported-themes))
               solaire-mode--swap-supported-p
-              (supported-p theme 'solaire-mode-themes-to-face-swap)
+              (funcall supported-p theme 'solaire-mode-themes-to-face-swap)
               solaire-mode--swapped-p nil))
       (when (bound-and-true-p solaire-global-mode)
         (if solaire-mode--supported-p
