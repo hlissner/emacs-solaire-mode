@@ -26,15 +26,15 @@ This plugin accomplishes this by doing two things when activated:
 + `solaire-global-mode` will globally swap faces in `solaire-mode-swap-alist` IF
   your active theme is in `solaire-mode-themes-to-face-swap`. Use this if you
   think your theme has its designated solaire-*-face colors the wrong way
-  around.
+  around. **This must be set before you activate your theme with `load-theme`!**
 
 Praise the sun.
 
 > [!IMPORTANT]
 > It is the responsibility of your active theme to style this package's faces to
 > look good. By default, `solaire-mode` will disable itself if a theme doesn't
-> appear to support it. See the "Configuration" section below covers how to add support to a
-> theme that lacks it.
+> appear to support it. See the "Configuration" section below covers how to add
+> support to a theme that lacks it.
 
 [Try jumping.](https://www.youtube.com/watch?v=-ZGlaAxB7nI)
 
@@ -68,9 +68,11 @@ Simply activate `solaire-global-mode`:
   current theme is in `solaire-mode-themes-to-face-swap`.
 - `solaire-mode-themes-to-face-swap` (default: `()`): A list of themes to swap
   faces in `solaire-mode-swap-alist` for. Can be symbols, regexps, or functions.
-- `solaire-mode-supported-themes` (default: `()`): Themes to ignore support for
-  and keep solaire-mode forcibly enabled for anyway. Can be `:all` (all themes)
-  or a list of symbols, regexps, or functions.
+  **This must be set before you activate your theme with `load-theme`!**
+- `solaire-mode-supported-themes` (default: `()`): Themes to forcibly enable
+  `solaire-mode` for, ignoring whether they support it or not. Can be `:all`
+  (all themes) or a list of symbols, regexps, or functions. **This must be set
+  before you activate your theme with `load-theme`!**
 
 ### Jolly cooperation with other plugins
 - By default, `solaire-mode` remaps the mode-line faces. This interferes with

@@ -134,7 +134,9 @@ argument (the currently loaded theme) and returns true if that theme's bg faces
 should be swapped.
 
 If the regexp or symbol matches the current theme (or the function returns
-non-nil), `solaire-mode-swap-faces-maybe' is used."
+non-nil), `solaire-mode-swap-faces-maybe' is used.
+
+Must be set before you enable themes with `load-theme'!"
   :type '(repeat (choice symbol regexp function)))
 
 (defcustom solaire-mode-supported-themes '()
@@ -148,7 +150,9 @@ This variable can be `:all' (force-enable solaire for all themes), nil (the
 default behavior), or a list of symbols (theme names), regexps (to be matched
 against the theme being enabled), or functions (that take a single argument: the
 theme as a symbol being enabled and returns non-nil if it is to be treated as
-supported)."
+supported).
+
+Must be set before you enable themes with `load-theme'!"
   :type '(choice (repeat (choice symbol regexp function))
                  (const :tag "Force enable for all themes" :all)
                  (const :tag "Only supported themes" nil)))
@@ -417,7 +421,7 @@ create these buffers early and insert whitespace in them."
 ;; Make sure the minibuffer always has solaire-mode active in it.
 (add-hook 'solaire-global-mode-hook #'solaire-mode-fix-minibuffer)
 
-;; Give `solaire-global-mode' a change to swap faces as early as possible.
+;; In case `solaire-global-mode' is enabled after `load-theme' is called.
 (add-hook 'solaire-global-mode-hook #'solaire-mode-swap-faces-maybe)
 
 (defun solaire-mode--auto-detect-theme ()
